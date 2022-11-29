@@ -1,10 +1,10 @@
 # * imports
 from .utils import *
 from .hardcoded import (
-  price_anchor_tokens,
-  amount_anchor_tokens,
-  product_name_anchor_tokens,
-  )
+    price_anchor_tokens,
+    amount_anchor_tokens,
+    product_name_anchor_tokens,
+)
 
 # * helper functions
 def node_by_text(input_nodes, tokens):
@@ -113,14 +113,21 @@ def amount_extract(*args, **kwargs):
 # * the product name
 def subject_extract(
     dep_graph: DependencyGraph,
-    stop_nodes=None,  #: @todo/Feraidoon
+    stop_nodes=None,  #: @done/Feraidoon =sample_13=
 ):
     nodes = dep_graph.nodes.values()
+
+    if stop_nodes is None:
+        stop_nodes = []
+    # stop_nodes = [] #: @ablation
+    stop_nodes_addresses = list(map(lambda x: x["address"], stop_nodes))
 
     output = []
     for sbj_node in nodes:
         # ic(sbj_node)
-        if (sbj_node["rel"]) not in ("SBJ",):
+        if (sbj_node["rel"]) not in ("SBJ",) or sbj_node[
+            "address"
+        ] in stop_nodes_addresses:
             continue
 
         nums = [sbj_node]
@@ -128,9 +135,6 @@ def subject_extract(
 
         def add(
             node,
-            # recur_acceptable_tags=('NUM',
-            #               'CONJ',),
-            # acceptable_tags=('NUM',),
         ):
             nonlocal accepted
 
@@ -139,14 +143,16 @@ def subject_extract(
                     dep_node = dep_graph.get_by_address(dep_address)
                     # ic(dep, dep_node)
 
-                    if True:
-                        # if dep_node['tag'] in acceptable_tags:
+                    if dep_address not in stop_nodes_addresses:
+                        # ic("subject dep added", dep_node)
+
                         nums.append(dep_node)
                         add(
                             dep_node,
-                            # acceptable_tags=recur_acceptable_tags,
-                            # recur_acceptable_tags=recur_acceptable_tags,
                         )
+                    else:
+                        # ic("subject dep SKIPPED", dep_node)
+                        pass
 
         add(sbj_node)
 
@@ -164,7 +170,9 @@ def subject_extract(
     return output
 
 
-def product_name_extract(dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **kwargs):
+def product_name_extract(
+    dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **kwargs
+):
     out = product_name_extract_by_anchor_tokens(
         dep_graph, *args, stop_nodes=stop_nodes, **kwargs
     )
@@ -208,6 +216,8 @@ def product_name_extract_by_node_lst_lst(
 def product_name_extract_by_nodes(dep_graph: DependencyGraph, stop_nodes, cost_nodes):
     nodes = dep_graph.nodes
 
+    if stop_nodes is None:
+        stop_nodes = []
     stop_nodes_addresses = list(map(lambda x: x["address"], stop_nodes))
 
     output = []

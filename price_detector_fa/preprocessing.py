@@ -1,10 +1,10 @@
 # * imports
 from .utils import *
 from .hardcoded import (
-  # price_anchor_tokens,
-  amount_anchor_tokens,
-  product_name_anchor_tokens,
-  )
+    # price_anchor_tokens,
+    amount_anchor_tokens,
+    product_name_anchor_tokens,
+)
 
 # * helper functions
 def or_re(patterns):
@@ -14,16 +14,16 @@ def or_re(patterns):
 # * rules
 # ** regex replacements
 replacements = dict()
-replacements[f"bهر({or_re(amount_anchor_tokens)})b"] = f"هر 1"
+replacements[f"\\bهر({or_re(amount_anchor_tokens)})\\b"] = f"هر \\1"
 replacements[
-    f"""b({or_re(product_name_anchor_tokens)})s+{or_re([
+    f"""\\b({or_re(product_name_anchor_tokens)})s+{or_re([
     'جهانی',
     'بازار',
     'کف بازار',
     'فعلی',
     'حدودی',
-    ])}b"""
-] = f"1"
+    ])}\\b"""
+] = f"\\1"
 
 replacements_compiled = dict()
 for k, v in replacements.items():
@@ -38,10 +38,12 @@ simple_replacements = {
 # ** regex token skips
 regex_token_skip = [
     "{}({})?".format(
-        or_re([
-            "بیش",
-            "کم",
-        ]),
+        or_re(
+            [
+                "بیش",
+                "کم",
+            ]
+        ),
         "تر",
     ),
 ]
@@ -66,18 +68,18 @@ def preprocess(text: str):
     tokens_processed = []
 
     for i, token in enumerate(tokens):
-      skip_me = False
-      for pattern in regex_token_skip:
-        if pattern.match(token):
-          skip_me = True
-          break
-      if skip_me:
-        continue
+        skip_me = False
+        for pattern in regex_token_skip:
+            if pattern.match(token):
+                skip_me = True
+                break
+        if skip_me:
+            continue
 
-      if token in simple_replacements:
-        token = simple_replacements[token]
+        if token in simple_replacements:
+            token = simple_replacements[token]
 
-      tokens_processed.append(token)
+        tokens_processed.append(token)
 
     return tokens_processed
 
