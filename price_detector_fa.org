@@ -1346,10 +1346,6 @@ ic| text: ('دبیر انجمن تصفیه کنندگان شکر گفت: در ش
 #+caption: svg
 [[file:price_detector_fa_files/price_detector_fa_53_1.svg]]
 
-#+begin_src python
-dir(sample_3_ht)
-#+end_src
-
 #+begin_example
 ['__class__',
  '__delattr__',
@@ -1406,6 +1402,10 @@ dir(sample_3_ht)
  'triples',
  'unicode_repr']
 #+end_example
+
+#+begin_src python
+dir(sample_3_ht)
+#+end_src
 
 #+begin_src python
 list(sample_3_ht.triples())
@@ -1501,6 +1501,10 @@ ic| extracted_show(unit_extract(sample_3_ht)): ['مقدار:  یک تن']
 #+end_example
 
 ** Test
+#+begin_src python
+cache = dict()
+#+end_src
+
 #+begin_src python
 for s in (
     # sample_1,
