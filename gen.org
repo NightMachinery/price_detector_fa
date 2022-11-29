@@ -1,22 +1,30 @@
 #+TITLE: price_detector_fa
 
+* [[https://colab.research.google.com/drive/1nmw4kPOwkVT4ZTZIaQcbNomUqjOIxOj1#scrollTo=JuH-yvEB_OGi&uniqifier=1][price_detector_fa.ipynb - Colaboratory]]
+
 * @todos
 
-** price_extract
-
-*** باید در تابع price_extract نگاه کنیم اگه در دیپندنتای توکنی کلمه «سنت» بود اون رو حتمن لحاظ کنیم
-
-**** We should probably scrap our current tree-based method.
-
-*** The =$= sign
-**** We can just go left and right from the anchor tokens as long as the tokens are CONJ, NUM or "cents" etc.
-***** This also has some failure modes:
-
-****** قیمت ماشین هزار تومان و یک کیلو شکر سه تومان است.
-
-** Add =stop_nodes= to =subject_extract=.
+** TODO Add =stop_nodes= to =subject_extract=.
 *** Stop when "را" is seen.
 
 ** There can be no unit tokens:
 
 *** سه هندوانه صدهزار تومان
+
+** price_extract
+
+*** DONE باید در تابع price_extract نگاه کنیم اگه در دیپندنتای توکنی کلمه «سنت» بود اون رو حتمن لحاظ کنیم
+
+**** We should probably scrap our current tree-based method.
+
+*** DONE The =$= sign
+**** We can just go left and right from the anchor tokens as long as the tokens are CONJ, NUM or "cents" etc.
+***** This also has some failure modes:
+
+****** قیمت ماشین هزار تومان و یک کیلو شکر سه تومان است.
+
+***** We can special-case =$=, and use our old tree-based approach for other anchor tokens.
+****** This might double-count:
+
+******* قیمت آن کیک $100 دلار می‌باشد.
+

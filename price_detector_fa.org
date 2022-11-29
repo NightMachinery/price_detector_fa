@@ -1,0 +1,1577 @@
+* Dadma
+:PROPERTIES:
+:visibility: folded
+:END:
+** Bootstrap
+#+begin_src python
+! pip install dadmatools
+#+end_src
+
+#+begin_example
+Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/
+Requirement already satisfied: dadmatools in /usr/local/lib/python3.7/dist-packages (1.5.2)
+Requirement already satisfied: tf-estimator-nightly==2.8.0.dev2021122109 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (2.8.0.dev2021122109)
+Requirement already satisfied: spacy>=3.0.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (3.4.3)
+Requirement already satisfied: conllu in /usr/local/lib/python3.7/dist-packages (from dadmatools) (4.5.2)
+Requirement already satisfied: hyperopt>=0.2.5 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.2.7)
+Requirement already satisfied: gensim>=3.6.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (3.6.0)
+Requirement already satisfied: NERDA in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.0.0)
+Requirement already satisfied: segtok>=1.5.7 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.5.11)
+Requirement already satisfied: h5py>=3.3.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (3.7.0)
+Requirement already satisfied: sklearn>=0.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.0.post1)
+Requirement already satisfied: torch>=1.7.1 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.12.1+cu113)
+Requirement already satisfied: py7zr>=0.17.2 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.20.2)
+Requirement already satisfied: pyconll>=3.1.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (3.1.0)
+Requirement already satisfied: bpemb>=0.3.3 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.3.4)
+Requirement already satisfied: supar==1.1.2 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.1.2)
+Requirement already satisfied: pytorch-transformers>=1.1.0 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.2.0)
+Requirement already satisfied: html2text in /usr/local/lib/python3.7/dist-packages (from dadmatools) (2020.1.16)
+Requirement already satisfied: tabulate>=0.8.6 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.8.10)
+Requirement already satisfied: Deprecated==1.2.6 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (1.2.6)
+Requirement already satisfied: transformers>=4.9.1 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (4.24.0)
+Requirement already satisfied: folium>=0.2.1 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (0.12.1.post1)
+Requirement already satisfied: gdown>=4.3.1 in /usr/local/lib/python3.7/dist-packages (from dadmatools) (4.4.0)
+Requirement already satisfied: nltk in /usr/local/lib/python3.7/dist-packages (from dadmatools) (3.3)
+Requirement already satisfied: wrapt<2,>=1.10 in /usr/local/lib/python3.7/dist-packages (from Deprecated==1.2.6->dadmatools) (1.14.1)
+Requirement already satisfied: dill in /usr/local/lib/python3.7/dist-packages (from supar==1.1.2->dadmatools) (0.3.6)
+Requirement already satisfied: stanza in /usr/local/lib/python3.7/dist-packages (from supar==1.1.2->dadmatools) (1.4.2)
+Requirement already satisfied: numpy in /usr/local/lib/python3.7/dist-packages (from bpemb>=0.3.3->dadmatools) (1.21.6)
+Requirement already satisfied: requests in /usr/local/lib/python3.7/dist-packages (from bpemb>=0.3.3->dadmatools) (2.23.0)
+Requirement already satisfied: sentencepiece in /usr/local/lib/python3.7/dist-packages (from bpemb>=0.3.3->dadmatools) (0.1.97)
+Requirement already satisfied: tqdm in /usr/local/lib/python3.7/dist-packages (from bpemb>=0.3.3->dadmatools) (4.64.1)
+Requirement already satisfied: jinja2>=2.9 in /usr/local/lib/python3.7/dist-packages (from folium>=0.2.1->dadmatools) (2.11.3)
+Requirement already satisfied: branca>=0.3.0 in /usr/local/lib/python3.7/dist-packages (from folium>=0.2.1->dadmatools) (0.6.0)
+Requirement already satisfied: six in /usr/local/lib/python3.7/dist-packages (from gdown>=4.3.1->dadmatools) (1.15.0)
+Requirement already satisfied: filelock in /usr/local/lib/python3.7/dist-packages (from gdown>=4.3.1->dadmatools) (3.8.0)
+Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.7/dist-packages (from gdown>=4.3.1->dadmatools) (4.6.3)
+Requirement already satisfied: smart-open>=1.2.1 in /usr/local/lib/python3.7/dist-packages (from gensim>=3.6.0->dadmatools) (5.2.1)
+Requirement already satisfied: scipy>=0.18.1 in /usr/local/lib/python3.7/dist-packages (from gensim>=3.6.0->dadmatools) (1.7.3)
+Requirement already satisfied: networkx>=2.2 in /usr/local/lib/python3.7/dist-packages (from hyperopt>=0.2.5->dadmatools) (2.6.3)
+Requirement already satisfied: future in /usr/local/lib/python3.7/dist-packages (from hyperopt>=0.2.5->dadmatools) (0.16.0)
+Requirement already satisfied: py4j in /usr/local/lib/python3.7/dist-packages (from hyperopt>=0.2.5->dadmatools) (0.10.9.7)
+Requirement already satisfied: cloudpickle in /usr/local/lib/python3.7/dist-packages (from hyperopt>=0.2.5->dadmatools) (1.5.0)
+Requirement already satisfied: MarkupSafe>=0.23 in /usr/local/lib/python3.7/dist-packages (from jinja2>=2.9->folium>=0.2.1->dadmatools) (2.0.1)
+Requirement already satisfied: multivolumefile>=0.2.3 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (0.2.3)
+Requirement already satisfied: inflate64>=0.3.1 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (0.3.1)
+Requirement already satisfied: pyppmd<1.1.0,>=0.18.1 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (1.0.0)
+Requirement already satisfied: texttable in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (1.6.5)
+Requirement already satisfied: pycryptodomex>=3.6.6 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (3.15.0)
+Requirement already satisfied: pyzstd>=0.14.4 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (0.15.3)
+Requirement already satisfied: importlib-metadata in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (4.13.0)
+Requirement already satisfied: psutil in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (5.4.8)
+Requirement already satisfied: pybcj>=0.6.0 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (1.0.1)
+Requirement already satisfied: brotli>=1.0.9 in /usr/local/lib/python3.7/dist-packages (from py7zr>=0.17.2->dadmatools) (1.0.9)
+Requirement already satisfied: regex in /usr/local/lib/python3.7/dist-packages (from pytorch-transformers>=1.1.0->dadmatools) (2022.6.2)
+Requirement already satisfied: sacremoses in /usr/local/lib/python3.7/dist-packages (from pytorch-transformers>=1.1.0->dadmatools) (0.0.53)
+Requirement already satisfied: boto3 in /usr/local/lib/python3.7/dist-packages (from pytorch-transformers>=1.1.0->dadmatools) (1.26.13)
+Requirement already satisfied: spacy-legacy<3.1.0,>=3.0.10 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (3.0.10)
+Requirement already satisfied: typing-extensions<4.2.0,>=3.7.4 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (4.1.1)
+Requirement already satisfied: packaging>=20.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (21.3)
+Requirement already satisfied: thinc<8.2.0,>=8.1.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (8.1.5)
+Requirement already satisfied: typer<0.8.0,>=0.3.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (0.4.2)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (57.4.0)
+Requirement already satisfied: catalogue<2.1.0,>=2.0.6 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (2.0.8)
+Requirement already satisfied: srsly<3.0.0,>=2.4.3 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (2.4.5)
+Requirement already satisfied: murmurhash<1.1.0,>=0.28.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (1.0.9)
+Requirement already satisfied: cymem<2.1.0,>=2.0.2 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (2.0.7)
+Requirement already satisfied: preshed<3.1.0,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (3.0.8)
+Requirement already satisfied: pathy>=0.3.5 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (0.6.2)
+Requirement already satisfied: spacy-loggers<2.0.0,>=1.0.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (1.0.3)
+Requirement already satisfied: pydantic!=1.8,!=1.8.1,<1.11.0,>=1.7.4 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (1.10.2)
+Requirement already satisfied: wasabi<1.1.0,>=0.9.1 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (0.10.1)
+Requirement already satisfied: langcodes<4.0.0,>=3.2.0 in /usr/local/lib/python3.7/dist-packages (from spacy>=3.0.0->dadmatools) (3.3.0)
+Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.7/dist-packages (from catalogue<2.1.0,>=2.0.6->spacy>=3.0.0->dadmatools) (3.10.0)
+Requirement already satisfied: pyparsing!=3.0.5,>=2.0.2 in /usr/local/lib/python3.7/dist-packages (from packaging>=20.0->spacy>=3.0.0->dadmatools) (3.0.9)
+Requirement already satisfied: chardet<4,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests->bpemb>=0.3.3->dadmatools) (3.0.4)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.7/dist-packages (from requests->bpemb>=0.3.3->dadmatools) (2022.9.24)
+Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.7/dist-packages (from requests->bpemb>=0.3.3->dadmatools) (2.10)
+Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.7/dist-packages (from requests->bpemb>=0.3.3->dadmatools) (1.25.11)
+Requirement already satisfied: confection<1.0.0,>=0.0.1 in /usr/local/lib/python3.7/dist-packages (from thinc<8.2.0,>=8.1.0->spacy>=3.0.0->dadmatools) (0.0.3)
+Requirement already satisfied: blis<0.8.0,>=0.7.8 in /usr/local/lib/python3.7/dist-packages (from thinc<8.2.0,>=8.1.0->spacy>=3.0.0->dadmatools) (0.7.9)
+Requirement already satisfied: pyyaml>=5.1 in /usr/local/lib/python3.7/dist-packages (from transformers>=4.9.1->dadmatools) (6.0)
+Requirement already satisfied: tokenizers!=0.11.3,<0.14,>=0.11.1 in /usr/local/lib/python3.7/dist-packages (from transformers>=4.9.1->dadmatools) (0.13.2)
+Requirement already satisfied: huggingface-hub<1.0,>=0.10.0 in /usr/local/lib/python3.7/dist-packages (from transformers>=4.9.1->dadmatools) (0.11.0)
+Requirement already satisfied: click<9.0.0,>=7.1.1 in /usr/local/lib/python3.7/dist-packages (from typer<0.8.0,>=0.3.0->spacy>=3.0.0->dadmatools) (7.1.2)
+Requirement already satisfied: jmespath<2.0.0,>=0.7.1 in /usr/local/lib/python3.7/dist-packages (from boto3->pytorch-transformers>=1.1.0->dadmatools) (1.0.1)
+Requirement already satisfied: botocore<1.30.0,>=1.29.13 in /usr/local/lib/python3.7/dist-packages (from boto3->pytorch-transformers>=1.1.0->dadmatools) (1.29.13)
+Requirement already satisfied: s3transfer<0.7.0,>=0.6.0 in /usr/local/lib/python3.7/dist-packages (from boto3->pytorch-transformers>=1.1.0->dadmatools) (0.6.0)
+Requirement already satisfied: python-dateutil<3.0.0,>=2.1 in /usr/local/lib/python3.7/dist-packages (from botocore<1.30.0,>=1.29.13->boto3->pytorch-transformers>=1.1.0->dadmatools) (2.8.2)
+Requirement already satisfied: pandas in /usr/local/lib/python3.7/dist-packages (from NERDA->dadmatools) (1.3.5)
+Requirement already satisfied: progressbar in /usr/local/lib/python3.7/dist-packages (from NERDA->dadmatools) (2.5)
+Requirement already satisfied: pytz>=2017.3 in /usr/local/lib/python3.7/dist-packages (from pandas->NERDA->dadmatools) (2022.6)
+Requirement already satisfied: PySocks!=1.5.7,>=1.5.6 in /usr/local/lib/python3.7/dist-packages (from requests->bpemb>=0.3.3->dadmatools) (1.7.1)
+Requirement already satisfied: joblib in /usr/local/lib/python3.7/dist-packages (from sacremoses->pytorch-transformers>=1.1.0->dadmatools) (1.2.0)
+Requirement already satisfied: emoji in /usr/local/lib/python3.7/dist-packages (from stanza->supar==1.1.2->dadmatools) (2.2.0)
+Requirement already satisfied: protobuf in /usr/local/lib/python3.7/dist-packages (from stanza->supar==1.1.2->dadmatools) (3.19.6)
+#+end_example
+
+#+begin_src python
+! pip install -U spacy
+#+end_src
+
+#+begin_example
+Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/
+Requirement already satisfied: spacy in /usr/local/lib/python3.7/dist-packages (3.4.3)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.7/dist-packages (from spacy) (57.4.0)
+Requirement already satisfied: spacy-legacy<3.1.0,>=3.0.10 in /usr/local/lib/python3.7/dist-packages (from spacy) (3.0.10)
+Requirement already satisfied: pathy>=0.3.5 in /usr/local/lib/python3.7/dist-packages (from spacy) (0.6.2)
+Requirement already satisfied: langcodes<4.0.0,>=3.2.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (3.3.0)
+Requirement already satisfied: catalogue<2.1.0,>=2.0.6 in /usr/local/lib/python3.7/dist-packages (from spacy) (2.0.8)
+Requirement already satisfied: cymem<2.1.0,>=2.0.2 in /usr/local/lib/python3.7/dist-packages (from spacy) (2.0.7)
+Requirement already satisfied: requests<3.0.0,>=2.13.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (2.23.0)
+Requirement already satisfied: murmurhash<1.1.0,>=0.28.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (1.0.9)
+Requirement already satisfied: thinc<8.2.0,>=8.1.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (8.1.5)
+Requirement already satisfied: typer<0.8.0,>=0.3.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (0.4.2)
+Requirement already satisfied: wasabi<1.1.0,>=0.9.1 in /usr/local/lib/python3.7/dist-packages (from spacy) (0.10.1)
+Requirement already satisfied: packaging>=20.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (21.3)
+Requirement already satisfied: preshed<3.1.0,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from spacy) (3.0.8)
+Requirement already satisfied: srsly<3.0.0,>=2.4.3 in /usr/local/lib/python3.7/dist-packages (from spacy) (2.4.5)
+Requirement already satisfied: numpy>=1.15.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (1.21.6)
+Requirement already satisfied: spacy-loggers<2.0.0,>=1.0.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (1.0.3)
+Requirement already satisfied: tqdm<5.0.0,>=4.38.0 in /usr/local/lib/python3.7/dist-packages (from spacy) (4.64.1)
+Requirement already satisfied: typing-extensions<4.2.0,>=3.7.4 in /usr/local/lib/python3.7/dist-packages (from spacy) (4.1.1)
+Requirement already satisfied: pydantic!=1.8,!=1.8.1,<1.11.0,>=1.7.4 in /usr/local/lib/python3.7/dist-packages (from spacy) (1.10.2)
+Requirement already satisfied: jinja2 in /usr/local/lib/python3.7/dist-packages (from spacy) (2.11.3)
+Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.7/dist-packages (from catalogue<2.1.0,>=2.0.6->spacy) (3.10.0)
+Requirement already satisfied: pyparsing!=3.0.5,>=2.0.2 in /usr/local/lib/python3.7/dist-packages (from packaging>=20.0->spacy) (3.0.9)
+Requirement already satisfied: smart-open<6.0.0,>=5.2.1 in /usr/local/lib/python3.7/dist-packages (from pathy>=0.3.5->spacy) (5.2.1)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.7/dist-packages (from requests<3.0.0,>=2.13.0->spacy) (2022.9.24)
+Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.7/dist-packages (from requests<3.0.0,>=2.13.0->spacy) (1.25.11)
+Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.7/dist-packages (from requests<3.0.0,>=2.13.0->spacy) (2.10)
+Requirement already satisfied: chardet<4,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests<3.0.0,>=2.13.0->spacy) (3.0.4)
+Requirement already satisfied: confection<1.0.0,>=0.0.1 in /usr/local/lib/python3.7/dist-packages (from thinc<8.2.0,>=8.1.0->spacy) (0.0.3)
+Requirement already satisfied: blis<0.8.0,>=0.7.8 in /usr/local/lib/python3.7/dist-packages (from thinc<8.2.0,>=8.1.0->spacy) (0.7.9)
+Requirement already satisfied: click<9.0.0,>=7.1.1 in /usr/local/lib/python3.7/dist-packages (from typer<0.8.0,>=0.3.0->spacy) (7.1.2)
+Requirement already satisfied: MarkupSafe>=0.23 in /usr/local/lib/python3.7/dist-packages (from jinja2->spacy) (2.0.1)
+#+end_example
+
+#+begin_src python
+! python -m spacy info
+#+end_src
+
+#+begin_example
+2022-11-21 08:48:19.439114: E tensorflow/stream_executor/cuda/cuda_driver.cc:271] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+
+============================== Info about spaCy ==============================
+
+spaCy version    3.4.3
+Location         /usr/local/lib/python3.7/dist-packages/spacy
+Platform         Linux-5.10.133+-x86_64-with-Ubuntu-18.04-bionic
+Python version   3.7.15
+Pipelines        en_core_web_sm (3.4.1)
+#+end_example
+
+#+begin_src python
+from huggingface_hub import notebook_login
+!git config --global credential.helper store
+
+# notebook_login()
+#+end_src
+
+#+begin_src python
+import dadmatools.pipeline.language as language
+
+# here lemmatizer and pos tagger will be loaded
+# as tokenizer is the default tool, it will be loaded as well even without calling
+# pips = 'tok,lem,pos,dep,chunk,cons,spellchecker,kasreh'
+pips = 'tok,lem,pos,dep,chunk,cons,kasreh'
+nlp = language.Pipeline(pips)
+
+# you can see the pipeline with this code
+print(nlp.analyze_pipes(pretty=True))
+
+# doc is an SpaCy object
+doc = nlp('از قصهٔ کودکیشان که می‌گفت، گاهی حرص می‌خورد!')
+#+end_src
+
+#+begin_example
+Model fa_tokenizer exists in /root/.pernlp/fa_tokenizer.pt
+Model fa_mwt exists in /root/.pernlp/fa_mwt.pt
+Model fa_lemmatizer exists in /root/.pernlp/fa_lemmatizer.pt
+Model parsbert exists in /root/.pernlp/parsbert.tar.gz
+Model dependencyparser exists in /root/.pernlp/dependencyparser.pt
+2022-11-21 09:05:41,131 loading file /usr/local/lib/python3.7/dist-packages/dadmatools/saved_models/dependencyparser/dependencyparser.pt
+Model parsbert exists in /root/.pernlp/parsbert.tar.gz
+Model postagger exists in /root/.pernlp/postagger.pt
+2022-11-21 09:05:49,154 loading file /usr/local/lib/python3.7/dist-packages/dadmatools/saved_models/postagger/postagger.pt
+Model fa_constituency exists in /root/.pernlp/fa_constituency.pt
+Model kasreh_ezafeh exists in /root/.pernlp/kasreh_ezafeh.pt
+
+
+/usr/local/lib/python3.7/dist-packages/dadmatools/models/common/beam.py:86: UserWarning: __floordiv__ is deprecated, and its behavior will change in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values. To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor').
+  prevK = bestScoresId // numWords
+[2022-11-21 09:06:00,479 INFO] [Ensembling dict with seq2seq lemmatizer...]
+
+
+
+============================= Pipeline Overview =============================
+
+#   Component            Assigns       Requires   Scores   Retokenizes
+-   ------------------   -----------   --------   ------   -----------
+0   tokenizer                                              True
+
+1   lemmatize            token.lemma                       False
+
+2   dependancyparser     token.dep                         False
+
+3   postagger            token.pos                         False
+
+4   chunking                                               False
+
+5   constituencyparser                                     False
+
+6   kasreh_ezafe                                           False
+
+✔ No problems found.
+{'summary': {'tokenizer': {'assigns': [], 'requires': [], 'scores': [], 'retokenizes': True}, 'lemmatize': {'assigns': ['token.lemma'], 'requires': [], 'scores': [], 'retokenizes': False}, 'dependancyparser': {'assigns': ['token.dep'], 'requires': [], 'scores': [], 'retokenizes': False}, 'postagger': {'assigns': ['token.pos'], 'requires': [], 'scores': [], 'retokenizes': False}, 'chunking': {'assigns': [], 'requires': [], 'scores': [], 'retokenizes': False}, 'constituencyparser': {'assigns': [], 'requires': [], 'scores': [], 'retokenizes': False}, 'kasreh_ezafe': {'assigns': [], 'requires': [], 'scores': [], 'retokenizes': False}}, 'problems': {'tokenizer': [], 'lemmatize': [], 'dependancyparser': [], 'postagger': [], 'chunking': [], 'constituencyparser': [], 'kasreh_ezafe': []}, 'attrs': {'token.pos': {'assigns': ['postagger'], 'requires': []}, 'token.lemma': {'assigns': ['lemmatize'], 'requires': []}, 'token.dep': {'assigns': ['dependancyparser'], 'requires': []}}}
+#+end_example
+
+#+begin_src python
+!md5sum -- ~/.pernlp/fa_tokenizer.pt
+#+end_src
+
+#+begin_example
+2097a125c5f85b36d569857bd60d51b7  /root/.pernlp/fa_tokenizer.pt
+#+end_example
+
+** Code
+#+begin_src python
+doc = nlp(sample_1)
+doc
+#+end_src
+
+#+begin_example
+[2022-11-21 06:17:57,447 INFO] [Ensembling dict with seq2seq lemmatizer...]
+
+
+
+
+
+در شرکت اسپارد ، قیمت یک سرویس نظافت ۵ ساعته ۲۴ هزار تومان می‌باشد .
+#+end_example
+
+#+begin_src python
+doc = nlp(sample_2)
+doc
+#+end_src
+
+#+begin_example
+[2022-11-21 14:28:27,937 INFO] [Ensembling dict with seq2seq lemmatizer...]
+
+
+
+
+
+به گزارش خبرنگار اقتصادی خبرگزاری تسنیم ، هماکنون در بازار آزاد ، قیمت طلای ۱۸ عیار هر گرم یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است
+#+end_example
+
+#+begin_src python
+doc = nlp(sample_2_4)
+doc
+#+end_src
+
+#+begin_example
+[2022-11-21 09:32:42,932 INFO] [Ensembling dict with seq2seq lemmatizer...]
+
+
+
+
+
+قیمت یک گرم طلای ۱۸ عیار یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است
+#+end_example
+
+#+begin_src python
+ic(doc._.constituency,
+   doc._.kasreh_ezafe,
+  #  doc._.chunks,
+   )
+doc._.chunks
+#+end_src
+
+#+begin_example
+ic| doc._.constituency: [(TOP (NP (_ بیت‌کوین) (_ با) (_ افت) (_ ۱) (_ درصدی) (_ به) (_ قیمت) (_ ۱۶) (_ هزار) (_ و) (_ ۵۹۸) (_ دلار) (_ و) (_ اتریوم) (_ با) (_ کاهش) (_ کمتر) (_ از) (_ ۱) (_ درصد) (_ به) (_ قیمت) (_ هزار) (_ و) (NP (_ ۲۰۷) (NP (_ دلار) (NP (_ معامله) (_ می‌شوند)))) (_ .)))]
+    doc._.kasreh_ezafe: [[{'tag': 'N-KASREH', 'word': 'بیتکوین'},
+                          {'tag': 'N-KASREH', 'word': 'با'},
+                          {'tag': 'KASREH', 'word': 'افت'},
+                          {'tag': 'KASREH', 'word': '۱'},
+                          {'tag': 'N-KASREH', 'word': 'درصدی'},
+                          {'tag': 'N-KASREH', 'word': 'به'},
+                          {'tag': 'KASREH', 'word': 'قیمت'},
+                          {'tag': 'N-KASREH', 'word': '۱۶'},
+                          {'tag': 'N-KASREH', 'word': 'هزار'},
+                          {'tag': 'N-KASREH', 'word': 'و'},
+                          {'tag': 'N-KASREH', 'word': '۵۹۸'},
+                          {'tag': 'N-KASREH', 'word': 'دلار'},
+                          {'tag': 'N-KASREH', 'word': 'و'},
+                          {'tag': 'N-KASREH', 'word': 'اتریوم'},
+                          {'tag': 'N-KASREH', 'word': 'با'},
+                          {'tag': 'KASREH', 'word': 'کاهش'},
+                          {'tag': 'N-KASREH', 'word': 'کمتر'},
+                          {'tag': 'N-KASREH', 'word': 'از'},
+                          {'tag': 'N-KASREH', 'word': '۱'},
+                          {'tag': 'N-KASREH', 'word': 'درصد'},
+                          {'tag': 'N-KASREH', 'word': 'به'},
+                          {'tag': 'KASREH', 'word': 'قیمت'},
+                          {'tag': 'N-KASREH', 'word': 'هزار'},
+                          {'tag': 'N-KASREH', 'word': 'و'},
+                          {'tag': 'N-KASREH', 'word': '۲۰۷'},
+                          {'tag': 'N-KASREH', 'word': 'دلار'},
+                          {'tag': 'KASREH', 'word': 'معامله'},
+                          {'tag': 'N-KASREH', 'word': 'میشوند'},
+                          {'tag': 'N-KASREH', 'word': '.'}]]
+
+
+
+
+
+['[بیت\u200cکوین NP] [با PP] [افت NP] [۱ درصدی NP] [به PP] [قیمت NP] [۱۶ NP] [هزار ADJP] و [۵۹۸ NP] [دلار و اتریوم NP] [با PP] [کاهش NP] [کمتر ADJP] [از PP] [۱ درصد NP] [به PP] [قیمت NP] [هزار ADJP] و [۲۰۷ PP] [دلار NP] [معامله NP] [می\u200cشوند VP] .']
+#+end_example
+
+#+begin_src python
+import spacy
+from spacy import displacy
+
+displacy.render(list(doc.sents)[0], style='dep')
+#+end_src
+
+#+begin_example
+---------------------------------------------------------------------------
+
+RuntimeError                              Traceback (most recent call last)
+
+<ipython-input-14-da14bdd27289> in <module>
+      2 from spacy import displacy
+      3
+----> 4 displacy.render(list(doc.sents)[0], style='dep')
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/displacy/__init__.py in render(docs, style, page, minify, jupyter, options, manual)
+     56     renderer_func, converter = factories[style]
+     57     renderer = renderer_func(options=options)
+---> 58     parsed = [converter(doc, options) for doc in docs] if not manual else docs  # type: ignore
+     59     if manual:
+     60         for doc in docs:
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/displacy/__init__.py in <listcomp>(.0)
+     56     renderer_func, converter = factories[style]
+     57     renderer = renderer_func(options=options)
+---> 58     parsed = [converter(doc, options) for doc in docs] if not manual else docs  # type: ignore
+     59     if manual:
+     60         for doc in docs:
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/displacy/__init__.py in parse_deps(orig_doc, options)
+    156             for span, tag, lemma, ent_type in spans:
+    157                 attrs = {"tag": tag, "lemma": lemma, "ent_type": ent_type}
+--> 158                 retokenizer.merge(span, attrs=attrs)  # type: ignore[arg-type]
+    159     fine_grained = options.get("fine_grained")
+    160     add_lemma = options.get("add_lemma")
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/tokens/_retokenize.pyx in spacy.tokens._retokenize.Retokenizer.__exit__()
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/tokens/_retokenize.pyx in spacy.tokens._retokenize._merge()
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/tokens/span.pyx in spacy.tokens.span.Span.root.__get__()
+
+
+/usr/local/lib/python3.7/dist-packages/spacy/tokens/span.pyx in spacy.tokens.span._count_words_to_root()
+
+
+RuntimeError: [E039] Array bounds exceeded while searching for root word. This likely means the parse tree is in an invalid state. Please report this issue here: http://github.com/explosion/spaCy/issues
+#+end_example
+
+#+begin_src python
+doc._.sentences
+#+end_src
+
+#+begin_example
+[به گزارش خبرنگار اقتصادی خبرگزاری تسنیم ، هماکنون در بازار آزاد ، قیمت طلای ۱۸عیار هر گرم یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است]
+#+end_example
+
+#+begin_src python
+for t in doc:
+  # print(dir(t))
+
+  print(f"{t.text}:\n\torth_: {t.orth_}\n\tnorm_: {t.norm_}\n\tlemma_: {t.lemma_}\n\tdep_: {t.dep_}\n\tpos_: {t.pos_}\n\tshape_: {t.shape_}\n\ttag_: {t.tag_}\n\tprefix_: {t.prefix_}\n\tsuffix_: {t.suffix_}\n\thead: {t.head}\n\tis_currency: {t.is_currency}, is_digit: {t.is_digit}\n\tchildren: {list(t.children)}\n\tancestors: {list(t.ancestors)}\n\tright_edge: {t.right_edge}\n\trights: {list(t.rights)}\n\tleft_edge: {t.left_edge}\n\tlefts: {list(t.lefts)}")
+  # break
+
+#+end_src
+
+#+begin_example
+به:
+    orth_: به
+    norm_: به
+    lemma_: به
+    dep_: case
+    pos_: ADP
+    shape_: xx
+    tag_:
+    prefix_: ب
+    suffix_: به
+    head: گزارش
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: به
+    rights: []
+    left_edge: به
+    lefts: []
+گزارش:
+    orth_: گزارش
+    norm_: گزارش
+    lemma_: گزارش
+    dep_: obl
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: گ
+    suffix_: ارش
+    head: است
+    is_currency: False, is_digit: False
+    children: [به, خبرنگار]
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: است
+    rights: [خبرنگار]
+    left_edge: به
+    lefts: [به]
+خبرنگار:
+    orth_: خبرنگار
+    norm_: خبرنگار
+    lemma_: خبرنگار
+    dep_: nmod
+    pos_: CCONJ
+    shape_: xxxx
+    tag_:
+    prefix_: خ
+    suffix_: گار
+    head: گزارش
+    is_currency: False, is_digit: False
+    children: [،, است]
+    ancestors: [گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: است
+    rights: [،, است]
+    left_edge: به
+    lefts: []
+اقتصادی:
+    orth_: اقتصادی
+    norm_: اقتصادی
+    lemma_: اقتصادی
+    dep_: obl:arg
+    pos_: ADJ
+    shape_: xxxx
+    tag_:
+    prefix_: ا
+    suffix_: ادی
+    head: است
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: اقتصادی
+    rights: []
+    left_edge: اقتصادی
+    lefts: []
+خبرگزاری:
+    orth_: خبرگزاری
+    norm_: خبرگزاری
+    lemma_: خبرگزاری
+    dep_: nsubj
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: خ
+    suffix_: اری
+    head: است
+    is_currency: False, is_digit: False
+    children: [جدید, هزار]
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: هزار
+    rights: [جدید, هزار]
+    left_edge: خبرگزاری
+    lefts: []
+تسنیم:
+    orth_: تسنیم
+    norm_: تسنیم
+    lemma_: تسنیم
+    dep_: obl:arg
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ت
+    suffix_: نیم
+    head: است
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: تسنیم
+    rights: []
+    left_edge: تسنیم
+    lefts: []
+،:
+    orth_: ،
+    norm_: ،
+    lemma_: ،
+    dep_: punct
+    pos_: PUNCT
+    shape_: ،
+    tag_:
+    prefix_: ،
+    suffix_: ،
+    head: خبرنگار
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش]
+    right_edge: ،
+    rights: []
+    left_edge: ،
+    lefts: []
+هماکنون:
+    orth_: هماکنون
+    norm_: هماکنون
+    lemma_: هماکنون
+    dep_: obl
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ه
+    suffix_: نون
+    head: است
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: هماکنون
+    rights: []
+    left_edge: هماکنون
+    lefts: []
+در:
+    orth_: در
+    norm_: در
+    lemma_: در
+    dep_: case
+    pos_: ADP
+    shape_: xx
+    tag_:
+    prefix_: د
+    suffix_: در
+    head: بازار
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [بازار, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: در
+    rights: []
+    left_edge: در
+    lefts: []
+بازار:
+    orth_: بازار
+    norm_: بازار
+    lemma_: بازار
+    dep_: obl
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ب
+    suffix_: زار
+    head: است
+    is_currency: False, is_digit: False
+    children: [در, آزاد]
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: ،
+    rights: [آزاد]
+    left_edge: در
+    lefts: [در]
+آزاد:
+    orth_: آزاد
+    norm_: آزاد
+    lemma_: آزاد
+    dep_: amod
+    pos_: ADJ
+    shape_: xxxx
+    tag_:
+    prefix_: آ
+    suffix_: زاد
+    head: بازار
+    is_currency: False, is_digit: False
+    children: [،]
+    ancestors: [بازار, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: ،
+    rights: [،]
+    left_edge: آزاد
+    lefts: []
+،:
+    orth_: ،
+    norm_: ،
+    lemma_: ،
+    dep_: punct
+    pos_: PUNCT
+    shape_: ،
+    tag_:
+    prefix_: ،
+    suffix_: ،
+    head: آزاد
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [آزاد, بازار, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش]
+    right_edge: ،
+    rights: []
+    left_edge: ،
+    lefts: []
+قیمت:
+    orth_: قیمت
+    norm_: قیمت
+    lemma_: قیمت
+    dep_: nsubj
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ق
+    suffix_: یمت
+    head: است
+    is_currency: False, is_digit: False
+    children: [طلای]
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: ۱۸عیار
+    rights: [طلای]
+    left_edge: قیمت
+    lefts: []
+طلای:
+    orth_: طلای
+    norm_: طلای
+    lemma_: طلا
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ط
+    suffix_: لای
+    head: قیمت
+    is_currency: False, is_digit: False
+    children: [۱۸عیار]
+    ancestors: [قیمت, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: ۱۸عیار
+    rights: [۱۸عیار]
+    left_edge: طلای
+    lefts: []
+۱۸عیار:
+    orth_: ۱۸عیار
+    norm_: ۱۸عیار
+    lemma_: ۱۸عیار
+    dep_: nmod
+    pos_: NOUN
+    shape_: ddxxxx
+    tag_:
+    prefix_: ۱
+    suffix_: یار
+    head: طلای
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [طلای, قیمت, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش]
+    right_edge: ۱۸عیار
+    rights: []
+    left_edge: ۱۸عیار
+    lefts: []
+هر:
+    orth_: هر
+    norm_: هر
+    lemma_: هر
+    dep_: det
+    pos_: NOUN
+    shape_: xx
+    tag_:
+    prefix_: ه
+    suffix_: هر
+    head: گرم
+    is_currency: False, is_digit: False
+    children: [گرم, آزادی]
+    ancestors: [گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر]
+    right_edge: آزادی
+    rights: [گرم, آزادی]
+    left_edge: هر
+    lefts: []
+گرم:
+    orth_: گرم
+    norm_: گرم
+    lemma_: گرم
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxx
+    tag_:
+    prefix_: گ
+    suffix_: گرم
+    head: هر
+    is_currency: False, is_digit: False
+    children: [هر]
+    ancestors: [هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم]
+    right_edge: آزادی
+    rights: []
+    left_edge: هر
+    lefts: [هر]
+یک:
+    orth_: یک
+    norm_: یک
+    lemma_: یک
+    dep_: nummod
+    pos_: NUM
+    shape_: xx
+    tag_:
+    prefix_: ی
+    suffix_: یک
+    head: میلیون
+    is_currency: False, is_digit: False
+    children: [میلیون, ۳۵۹, میلیون]
+    ancestors: [میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: تومان
+    rights: [میلیون, ۳۵۹, میلیون]
+    left_edge: یک
+    lefts: []
+میلیون:
+    orth_: میلیون
+    norm_: میلیون
+    lemma_: میلیون
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: م
+    suffix_: یون
+    head: یک
+    is_currency: False, is_digit: False
+    children: [یک, تومان, تومان]
+    ancestors: [یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون]
+    right_edge: تومان
+    rights: [تومان, تومان]
+    left_edge: یک
+    lefts: [یک]
+و:
+    orth_: و
+    norm_: و
+    lemma_: و
+    dep_: cc
+    pos_: CCONJ
+    shape_: x
+    tag_:
+    prefix_: و
+    suffix_: و
+    head: ۳۵۹
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [۳۵۹, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: و
+    rights: []
+    left_edge: و
+    lefts: []
+۳۵۹:
+    orth_: ۳۵۹
+    norm_: ۳۵۹
+    lemma_: ۳۵۹
+    dep_: conj
+    pos_: NOUN
+    shape_: ddd
+    tag_:
+    prefix_: ۳
+    suffix_: ۳۵۹
+    head: یک
+    is_currency: False, is_digit: True
+    children: [و, هزار, و]
+    ancestors: [یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون]
+    right_edge: و
+    rights: [هزار, و]
+    left_edge: و
+    lefts: [و]
+هزار:
+    orth_: هزار
+    norm_: هزار
+    lemma_: هزار
+    dep_: nmod
+    pos_: VERB
+    shape_: xxxx
+    tag_:
+    prefix_: ه
+    suffix_: زار
+    head: ۳۵۹
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [۳۵۹, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: هزار
+    rights: []
+    left_edge: هزار
+    lefts: []
+تومان:
+    orth_: تومان
+    norm_: تومان
+    lemma_: تومان
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ت
+    suffix_: مان
+    head: میلیون
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: تومان
+    rights: []
+    left_edge: تومان
+    lefts: []
+و:
+    orth_: و
+    norm_: و
+    lemma_: و
+    dep_: cc
+    pos_: CCONJ
+    shape_: x
+    tag_:
+    prefix_: و
+    suffix_: و
+    head: است
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: و
+    rights: []
+    left_edge: و
+    lefts: []
+قیمت:
+    orth_: قیمت
+    norm_: قیمت
+    lemma_: قیمت
+    dep_: nsubj
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ق
+    suffix_: یمت
+    head: است
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: قیمت
+    rights: []
+    left_edge: قیمت
+    lefts: []
+سکه:
+    orth_: سکه
+    norm_: سکه
+    lemma_: سکه
+    dep_: nmod
+    pos_: CCONJ
+    shape_: xxx
+    tag_:
+    prefix_: س
+    suffix_: سکه
+    head: تمام
+    is_currency: False, is_digit: False
+    children: [تمام, بهار, ۱۰۰]
+    ancestors: [تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه]
+    right_edge: ۱۰۰
+    rights: [تمام, بهار, ۱۰۰]
+    left_edge: سکه
+    lefts: []
+تمام:
+    orth_: تمام
+    norm_: تمام
+    lemma_: تمام
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ت
+    suffix_: مام
+    head: سکه
+    is_currency: False, is_digit: False
+    children: [سکه, طرح]
+    ancestors: [سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام]
+    right_edge: ۱۰۰
+    rights: [طرح]
+    left_edge: سکه
+    lefts: [سکه]
+بهار:
+    orth_: بهار
+    norm_: بهار
+    lemma_: بهار
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: ب
+    suffix_: هار
+    head: سکه
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام]
+    right_edge: بهار
+    rights: []
+    left_edge: بهار
+    lefts: []
+آزادی:
+    orth_: آزادی
+    norm_: آزادی
+    lemma_: آزادی
+    dep_: conj
+    pos_: VERB
+    shape_: xxxx
+    tag_:
+    prefix_: آ
+    suffix_: ادی
+    head: هر
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم, هر, گرم]
+    right_edge: آزادی
+    rights: []
+    left_edge: آزادی
+    lefts: []
+طرح:
+    orth_: طرح
+    norm_: طرح
+    lemma_: طرح
+    dep_: nmod
+    pos_: NOUN
+    shape_: xxx
+    tag_:
+    prefix_: ط
+    suffix_: طرح
+    head: تمام
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه]
+    right_edge: طرح
+    rights: []
+    left_edge: طرح
+    lefts: []
+جدید:
+    orth_: جدید
+    norm_: جدید
+    lemma_: جدید
+    dep_: conj
+    pos_: ADP
+    shape_: xxxx
+    tag_:
+    prefix_: ج
+    suffix_: دید
+    head: خبرگزاری
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [خبرگزاری, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: جدید
+    rights: []
+    left_edge: جدید
+    lefts: []
+۱۵:
+    orth_: ۱۵
+    norm_: ۱۵
+    lemma_: ۱۵
+    dep_: obl
+    pos_: NOUN
+    shape_: dd
+    tag_:
+    prefix_: ۱
+    suffix_: ۱۵
+    head: است
+    is_currency: False, is_digit: True
+    children: []
+    ancestors: [است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار]
+    right_edge: ۱۵
+    rights: []
+    left_edge: ۱۵
+    lefts: []
+میلیون:
+    orth_: میلیون
+    norm_: میلیون
+    lemma_: میلیون
+    dep_: flat:num
+    pos_: NOUN
+    shape_: xxxx
+    tag_:
+    prefix_: م
+    suffix_: یون
+    head: یک
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون]
+    right_edge: میلیون
+    rights: []
+    left_edge: میلیون
+    lefts: []
+و:
+    orth_: و
+    norm_: و
+    lemma_: و
+    dep_: cc
+    pos_: CCONJ
+    shape_: x
+    tag_:
+    prefix_: و
+    suffix_: و
+    head: ۳۵۹
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [۳۵۹, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: و
+    rights: []
+    left_edge: و
+    lefts: []
+۱۰۰:
+    orth_: ۱۰۰
+    norm_: ۱۰۰
+    lemma_: ۱۰۰
+    dep_: nmod
+    pos_: NOUN
+    shape_: ddd
+    tag_:
+    prefix_: ۱
+    suffix_: ۱۰۰
+    head: سکه
+    is_currency: False, is_digit: True
+    children: []
+    ancestors: [سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام, سکه, تمام]
+    right_edge: ۱۰۰
+    rights: []
+    left_edge: ۱۰۰
+    lefts: []
+هزار:
+    orth_: هزار
+    norm_: هزار
+    lemma_: هزار
+    dep_: conj
+    pos_: VERB
+    shape_: xxxx
+    tag_:
+    prefix_: ه
+    suffix_: زار
+    head: خبرگزاری
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [خبرگزاری, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است]
+    right_edge: هزار
+    rights: []
+    left_edge: هزار
+    lefts: []
+تومان:
+    orth_: تومان
+    norm_: تومان
+    lemma_: تومان
+    dep_: conj
+    pos_: AUX
+    shape_: xxxx
+    tag_:
+    prefix_: ت
+    suffix_: مان
+    head: میلیون
+    is_currency: False, is_digit: False
+    children: []
+    ancestors: [میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک, میلیون, یک]
+    right_edge: تومان
+    rights: []
+    left_edge: تومان
+    lefts: []
+است:
+    orth_: است
+    norm_: است
+    lemma_: #است
+    dep_: cop
+    pos_: PUNCT
+    shape_: xxx
+    tag_:
+    prefix_: ا
+    suffix_: است
+    head: خبرنگار
+    is_currency: False, is_digit: False
+    children: [گزارش, اقتصادی, خبرگزاری, تسنیم, هماکنون, بازار, قیمت, و, قیمت, ۱۵]
+    ancestors: [خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش, است, خبرنگار, گزارش]
+    right_edge: است
+    rights: []
+    left_edge: به
+    lefts: [گزارش, اقتصادی, خبرگزاری, تسنیم, هماکنون, بازار, قیمت, و, قیمت, ۱۵]
+#+end_example
+
+#+begin_src python
+import spacy
+from spacy.matcher import DependencyMatcher
+
+matcher = DependencyMatcher(nlp.vocab)
+pattern = [
+  {
+    "RIGHT_ID": "anchor_currency",       # unique name
+    "RIGHT_ATTRS": {"ORTH":
+                    {"IN": ["تومان"]}
+                    }
+  }
+]
+matcher.add("CURRENCY", [pattern])
+matches = matcher(doc)
+print(matches)
+#+end_src
+
+#+begin_example
+[(14949065339723512609, [12])]
+#+end_example
+
+#+begin_src python
+doc[12]
+#+end_src
+
+#+begin_example
+تومان
+#+end_example
+
+* Hazm
+** example parse trees
+#+begin_src python
+normalizer.normalize("هرکیلو گندم 12.34 هزار تومان است.")
+#+end_src
+
+#+begin_example
+'هرکیلو گندم ۱۲٫۳۴ هزار تومان است.'
+#+end_example
+
+#+begin_src python
+preprocess(sample_3)
+#+end_src
+
+#+begin_example
+ic| text: ('دبیر انجمن تصفیه کنندگان شکر گفت: در شرایط کنونی هر تن شکر ۵۳۰ دلار تحویل '
+           'بنادر می شود.')
+
+
+
+
+
+['دبیر',
+ 'انجمن',
+ 'تصفیه',
+ 'کنندگان',
+ 'شکر',
+ 'گفت',
+ ':',
+ 'در',
+ 'شرایط',
+ 'کنونی',
+ 'یک',
+ 'تن',
+ 'شکر',
+ '۵۳۰',
+ 'دلار',
+ 'تحویل',
+ 'بنادر',
+ 'می',
+ 'شود',
+ '.']
+#+end_example
+
+#+begin_src python
+word_tokenize('یک        دو سه')
+#+end_src
+
+#+begin_example
+['یک', 'دو', 'سه']
+#+end_example
+
+#+begin_src python
+preprocess(sample_5)
+#+end_src
+
+#+begin_example
+ic| text: ('ولی ما هر کیلو ماکارونی را فقط ۰.۳۵ $ فروخته ایم، در حالی که قیمت هر کیلو '
+           'گندم بیش ۰.۴$ است.')
+
+
+
+
+
+['ولی',
+ 'ما',
+ 'یک',
+ 'کیلو',
+ 'ماکارونی',
+ 'را',
+ 'فقط',
+ '۰.۳۵',
+ 'دلار',
+ 'فروخته_ایم',
+ '،',
+ 'در',
+ 'حالی',
+ 'که',
+ 'قیمت',
+ 'یک',
+ 'کیلو',
+ 'گندم',
+ 'بیش',
+ '۰.۴',
+ 'دلار',
+ 'است',
+ '.']
+#+end_example
+
+#+begin_src python
+parser.parse(preprocess('زنگ‌ها برای که به صدا درمی‌آید؟'))
+#+end_src
+
+#+begin_example
+ic| text: 'زنگ\u200cها برای که به صدا درمی\u200cآید؟'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_42_1.svg]]
+
+#+begin_src python
+sample_1_ht = parser.parse(preprocess(sample_1))
+sample_1_ht
+#+end_src
+
+#+begin_example
+ic| text: 'در شرکت اسپارد، قیمت یک سرویس نظافت ۵ ساعته ۲۴ هزار تومان می\u200cباشد.'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_43_1.svg]]
+
+#+begin_src python
+sample_2_ht = parser.parse(preprocess(sample_2))
+sample_2_ht
+#+end_src
+
+#+begin_example
+ic| text: ('به گزارش خبرنگار اقتصادی خبرگزاری تسنیم، هماکنون در بازار آزاد، قیمت طلای ۱۸ '
+           'عیار هر گرم یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار آزادی طرح جدید '
+           '۱۵ میلیون و ۱۰۰ هزار تومان است')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_44_1.svg]]
+
+#+begin_src python
+sent_tokenize(sample_2)
+#+end_src
+
+#+begin_example
+['به گزارش خبرنگار اقتصادی خبرگزاری تسنیم، هماکنون در بازار آزاد، قیمت طلای ۱۸ عیار هر گرم یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است']
+#+end_example
+
+#+begin_src python
+parser.parse(preprocess(sample_2_1))
+#+end_src
+
+#+begin_example
+ic| text: ('قیمت طلای ۱۸ عیار هر گرم یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار '
+           'آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_46_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_2_4))
+#+end_src
+
+#+begin_example
+ic| text: ('قیمت یک گرم طلای ۱۸ عیار یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار '
+           'آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان است')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_47_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_2_5))
+#+end_src
+
+#+begin_example
+ic| text: 'قیمت یک گرم طلای ۱۸ عیار یک میلیون و ۳۵۹ هزار تومان'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_48_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_2_6))
+#+end_src
+
+#+begin_example
+ic| text: ('قیمت یک گرم طلای ۱۸ عیار یک میلیون و ۳۵۹ هزار تومان و قیمت سکه تمام بهار '
+           'آزادی طرح جدید ۱۵ میلیون و ۱۰۰ هزار تومان')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_49_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_2_2))
+#+end_src
+
+#+begin_example
+ic| text: 'قیمت طلا هر گرم ۳۵۹ هزار تومان و قیمت سکه ۱۰۰ هزار تومان است'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_50_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_2_3))
+#+end_src
+
+#+begin_example
+ic| text: 'قیمت یک گرم طلا ۳۵۹ هزار تومان و قیمت سکه ۱۰۰ هزار تومان است'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_51_1.svg]]
+
+#+begin_src python
+sample_3_ht = parser.parse(preprocess(sample_3))
+sample_3_ht
+#+end_src
+
+#+begin_example
+ic| text: ('دبیر انجمن تصفیه کنندگان شکر گفت: در شرایط کنونی هر تن شکر ۵۳۰ دلار تحویل '
+           'بنادر می شود.')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_52_1.svg]]
+
+#+begin_src python
+parser.parse(preprocess(sample_3))
+#+end_src
+
+#+begin_example
+ic| text: ('دبیر انجمن تصفیه کنندگان شکر گفت: در شرایط کنونی هر تن شکر ۵۳۰ دلار تحویل '
+           'بنادر می شود.')
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_53_1.svg]]
+
+#+begin_src python
+dir(sample_3_ht)
+#+end_src
+
+#+begin_example
+['__class__',
+ '__delattr__',
+ '__dict__',
+ '__dir__',
+ '__doc__',
+ '__eq__',
+ '__format__',
+ '__ge__',
+ '__getattribute__',
+ '__gt__',
+ '__hash__',
+ '__init__',
+ '__init_subclass__',
+ '__le__',
+ '__lt__',
+ '__module__',
+ '__ne__',
+ '__new__',
+ '__reduce__',
+ '__reduce_ex__',
+ '__repr__',
+ '__setattr__',
+ '__sizeof__',
+ '__str__',
+ '__subclasshook__',
+ '__unicode__',
+ '__weakref__',
+ '_hd',
+ '_parse',
+ '_rel',
+ '_repr_svg_',
+ '_tree',
+ '_word',
+ 'add_arc',
+ 'add_node',
+ 'connect_graph',
+ 'contains_address',
+ 'contains_cycle',
+ 'get_by_address',
+ 'get_cycle_path',
+ 'left_children',
+ 'load',
+ 'nodes',
+ 'nx_graph',
+ 'redirect_arcs',
+ 'remove_by_address',
+ 'right_children',
+ 'root',
+ 'to_conll',
+ 'to_dot',
+ 'top_relation_label',
+ 'tree',
+ 'triples',
+ 'unicode_repr']
+#+end_example
+
+#+begin_src python
+list(sample_3_ht.triples())
+#+end_src
+
+#+begin_example
+[(('گفت', 'V'), 'SBJ', ('دبیر', 'Ne')),
+ (('دبیر', 'Ne'), 'MOZ', ('انجمن', 'Ne')),
+ (('انجمن', 'Ne'), 'MOZ', ('تصفیه', 'Ne')),
+ (('تصفیه', 'Ne'), 'MOZ', ('کنندگان', 'Ne')),
+ (('کنندگان', 'Ne'), 'MOZ', ('شکر', 'N')),
+ (('گفت', 'V'), 'PUNC', (':', 'PUNC')),
+ (('گفت', 'V'), 'VCL', ('شود', 'V')),
+ (('شود', 'V'), 'ADV', ('در', 'P')),
+ (('در', 'P'), 'POSDEP', ('شرایط', 'Ne')),
+ (('شرایط', 'Ne'), 'NPOSTMOD', ('کنونی', 'AJ')),
+ (('شود', 'V'), 'OBJ', ('شکر', 'N')),
+ (('شکر', 'N'), 'MESU', ('تن', 'CL')),
+ (('تن', 'CL'), 'NPREMOD', ('یک', 'NUM')),
+ (('شکر', 'N'), 'POSDEP', ('تحویل', 'Ne')),
+ (('تحویل', 'Ne'), 'MESU', ('دلار', 'N')),
+ (('دلار', 'N'), 'NPREMOD', ('۵۳۰', 'NUM')),
+ (('تحویل', 'Ne'), 'MOZ', ('بنادر', 'N')),
+ (('شود', 'V'), 'NVE', ('می', 'N')),
+ (('گفت', 'V'), 'PUNC', ('.', 'PUNC'))]
+#+end_example
+
+#+begin_src python
+list(sample_2_ht.triples())
+#+end_src
+
+#+begin_example
+[(('است', 'V'), 'ADV', ('به', 'P')),
+ (('به', 'P'), 'POSDEP', ('گزارش', 'Ne')),
+ (('گزارش', 'Ne'), 'MOZ', ('خبرنگار', 'Ne')),
+ (('خبرنگار', 'Ne'), 'NPOSTMOD', ('اقتصادی', 'AJe')),
+ (('خبرنگار', 'Ne'), 'MOZ', ('خبرگزاری', 'Ne')),
+ (('خبرگزاری', 'Ne'), 'MOZ', ('تسنیم', 'N')),
+ (('تسنیم', 'N'), 'PUNC', ('،', 'PUNC')),
+ (('است', 'V'), 'SBJ', ('هماکنون', 'N')),
+ (('است', 'V'), 'ADV', ('در', 'P')),
+ (('در', 'P'), 'POSDEP', ('بازار', 'Ne')),
+ (('بازار', 'Ne'), 'NPOSTMOD', ('آزاد', 'AJ')),
+ (('آزاد', 'AJ'), 'PUNC', ('،', 'PUNC')),
+ (('بازار', 'Ne'), 'MOZ', ('قیمت', 'Ne')),
+ (('قیمت', 'Ne'), 'MOZ', ('طلای', 'Ne')),
+ (('است', 'V'), 'SBJ', ('عیار', 'RES')),
+ (('عیار', 'RES'), 'NPREMOD', ('۱۸', 'NUM')),
+ (('است', 'V'), 'ADVC', ('تومان', 'N')),
+ (('تومان', 'N'), 'MESU', ('گرم', 'CL')),
+ (('گرم', 'CL'), 'NPREMOD', ('یک', 'NUM')),
+ (('تومان', 'N'), 'NPREMOD', ('میلیون', 'NUM')),
+ (('میلیون', 'NUM'), 'NPREMOD', ('یک', 'NUM')),
+ (('میلیون', 'NUM'), 'NCONJ', ('و', 'CONJ')),
+ (('و', 'CONJ'), 'POSDEP', ('هزار', 'NUM')),
+ (('هزار', 'NUM'), 'NPREMOD', ('۳۵۹', 'NUM')),
+ (('تومان', 'N'), 'NCONJ', ('و', 'CONJ')),
+ (('و', 'CONJ'), 'POSDEP', ('قیمت', 'Ne')),
+ (('است', 'V'), 'SBJ', ('سکه', 'Ne')),
+ (('سکه', 'Ne'), 'NPOSTMOD', ('تمام', 'AJ')),
+ (('سکه', 'Ne'), 'MOZ', ('بهار', 'Ne')),
+ (('بهار', 'Ne'), 'MOZ', ('آزادی', 'Ne')),
+ (('آزادی', 'Ne'), 'MOZ', ('طرح', 'Ne')),
+ (('طرح', 'Ne'), 'NPOSTMOD', ('جدید', 'AJ')),
+ (('است', 'V'), 'MOS', ('تومان', 'N')),
+ (('تومان', 'N'), 'NPREMOD', ('میلیون', 'NUM')),
+ (('میلیون', 'NUM'), 'NPREMOD', ('۱۵', 'NUM')),
+ (('میلیون', 'NUM'), 'NCONJ', ('و', 'CONJ')),
+ (('و', 'CONJ'), 'POSDEP', ('هزار', 'NUM')),
+ (('هزار', 'NUM'), 'NPREMOD', ('۱۰۰', 'NUM'))]
+#+end_example
+
+#+begin_src python
+ic(extracted_show(price_extract(sample_1_ht)))
+ic(extracted_show(price_extract(sample_2_ht)))
+ic(extracted_show(price_extract(sample_3_ht)))
+
+print('')
+ic(extracted_show(unit_extract(sample_1_ht)))
+ic(extracted_show(unit_extract(sample_2_ht)))
+ic(extracted_show(unit_extract(sample_3_ht)))
+None
+#+end_src
+
+#+begin_example
+ic| extracted_show(price_extract(sample_1_ht)): ['مقدار:  ۲۴ هزار تومان']
+ic| extracted_show(price_extract(sample_2_ht)): ['مقدار:  یک میلیون و ۳۵۹ هزار تومان', 'مقدار:  ۱۵ میلیون و ۱۰۰ هزار تومان']
+ic| extracted_show(price_extract(sample_3_ht)): ['مقدار:  ۵۳۰ دلار']
+
+ic| extracted_show(unit_extract(sample_1_ht)): ['مقدار:  ۵ ساعته']
+ic| extracted_show(unit_extract(sample_2_ht)): ['مقدار:  یک گرم']
+ic| extracted_show(unit_extract(sample_3_ht)): ['مقدار:  یک تن']
+#+end_example
+
+** Test
+#+begin_src python
+for s in (
+    # sample_1,
+    # sample_2,
+    # sample_2_1,
+    # sample_2_2,
+    # sample_2_3,
+    # sample_2_4,
+    # sample_2_5,
+    # sample_2_6,
+    # sample_2_7,
+    # sample_2_8,
+    sample_2_9,
+    # sample_3,
+    # sample_4,
+    # sample_5_e,
+    # sample_6,
+    # sample_7,
+    # sample_8,
+    # sample_8_2,
+    # sample_8_3,
+    # *samples_evil,
+    # *samples,
+):
+  print(s)
+  if True or s not in cache:
+    #: @todo6/Hoseini fix the return types
+    s_tokens = preprocess(s)
+
+    s_parsed = parser.parse(s_tokens)
+    s_tagged = tagger.tag(s_tokens)
+    s_chunks = tree2brackets(chunker.parse(s_tagged))
+    cache[s] = dict(
+        s_tokens=s_tokens,
+        s_parsed=s_parsed,
+        s_tagged=s_tagged,
+        s_chunks=s_chunks,
+        )
+  s_cached = cache[s]
+  s_tokens = s_cached['s_tokens']
+  s_parsed = s_cached['s_parsed']
+  s_tagged = s_cached['s_tagged']
+  s_chunks = s_cached['s_chunks']
+  ic(s_chunks)
+
+  display(s_parsed)
+  all_extract(s_parsed)
+  print()
+#+end_src
+
+#+begin_example
+قیمت طلا هر گرم ۳۵۹ هزار تومان و سکه ۱۰۰ هزار تومان است
+ic| text: 'قیمت طلا هر گرم ۳۵۹ هزار تومان و سکه ۱۰۰ هزار تومان است'
+ic| s_chunks: '[قیمت طلا NP] [یک گرم ۳۵۹ هزار تومان و سکه NP] [۱۰۰ هزار تومان NP] [است VP]'
+#+end_example
+
+#+caption: svg
+[[file:price_detector_fa_files/price_detector_fa_63_1.svg]]
+
+#+begin_example
+ic| extracted_show(price_extracted): ['مقدار:  ۳۵۹ هزار تومان', 'مقدار:  ۱۰۰ هزار تومان']
+ic| extracted_show(unit_extracted): ['مقدار:  یک گرم']
+ic| cost_extracted: [{'nodes': [{'address': 2,
+                                 'ctag': 'N',
+                                 'deps': defaultdict(<class 'list'>, {}),
+                                 'feats': '_',
+                                 'head': 1,
+                                 'lemma': 'طلا',
+                                 'rel': 'MOZ',
+                                 'tag': 'N',
+                                 'word': 'طلا'}]}]
+    extracted_show(cost_extracted): ['مقدار:  طلا']
+#+end_example
+
