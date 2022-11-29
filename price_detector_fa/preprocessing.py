@@ -37,7 +37,7 @@ simple_replacements = {
 
 # ** regex token skips
 regex_token_skip = [
-    "%s(%s)?".format(
+    "{}({})?".format(
         or_re([
             "بیش",
             "کم",
@@ -49,7 +49,7 @@ regex_token_skip = list(map(re.compile, regex_token_skip))
 
 # * main functions
 def preprocess(text: str):
-    #: @todo0/Feraidoon implement regex_token_skip
+    #: @done/Feraidoon implement regex_token_skip
     #: * @todo5/Hoseini
     #: ** recreate word_tokenize that returns {tokens, indices} (indices should include both start and end indices)
     #: ** do a first pass without any preprocessing and get A from word_tokenize_with_indices
@@ -63,13 +63,23 @@ def preprocess(text: str):
     #: breaks decimal numbers (like 89.12)
 
     tokens = word_tokenize(ic(text))
+    tokens_processed = []
 
-    for k, v in simple_replacements.items():
-        for i, token in enumerate(tokens):
-            if tokens[i] == k:
-                tokens[i] = v
+    for i, token in enumerate(tokens):
+      skip_me = False
+      for pattern in regex_token_skip:
+        if pattern.match(token):
+          skip_me = True
+          break
+      if skip_me:
+        continue
 
-    return tokens
+      if token in simple_replacements:
+        token = simple_replacements[token]
+
+      tokens_processed.append(token)
+
+    return tokens_processed
 
 
 # * end
