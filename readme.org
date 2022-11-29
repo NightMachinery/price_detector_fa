@@ -1,0 +1,3 @@
+#+TITLE: price_detector_fa
+
+=price_detector_fa= extracts product/price/amount tuples from Persian text using rule-based methods.

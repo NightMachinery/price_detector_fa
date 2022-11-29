@@ -3,7 +3,7 @@ name = "price-detector-fa"
 version = "0.1.0"
 description = ""
 authors = ["NightMachinery <feraidoonmehri@gmail.com>"]
-readme = "README.md"
+readme = "readme.org"
 packages = [{include = "price_detector_fa"}]
 
 [tool.poetry.dependencies]
