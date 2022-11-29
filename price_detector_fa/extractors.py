@@ -4,6 +4,7 @@ from .hardcoded import (
     price_anchor_tokens,
     amount_anchor_tokens,
     product_name_anchor_tokens,
+    subject_stop_words,
 )
 
 # * helper functions
@@ -288,13 +289,7 @@ def all_extract(dep_graph: DependencyGraph):
     nodes = dep_graph.nodes
     stop_nodes = node_by_text(
         nodes,
-        [
-            #: @todo add more stop words
-            "را",
-            "در",
-            "به",
-            "با",
-        ],
+        subject_stop_words,
     )["nodes"]
     stop_nodes += extracted_flatten(price_extracted)
     stop_nodes += extracted_flatten(unit_extracted)

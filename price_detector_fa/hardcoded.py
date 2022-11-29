@@ -37,4 +37,15 @@ product_name_anchor_tokens = [
     "میزان",
 ]
 
+# * subject stop words
+subject_stop_words = [
+    "را",
+    "در",
+    "به",
+    "از",
+    "با",
+    "بدون",
+]
+
+
 # * end
