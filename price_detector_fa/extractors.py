@@ -7,8 +7,23 @@ from .hardcoded import (
 )
 
 # * helper functions
+def node_children_get(dep_graph: DependencyGraph, node, include_self=True):
+    accum = []
+    if include_self:
+        accum.append(node)
+
+    for dep, dep_addresses in node["deps"].items():
+        for dep_address in dep_addresses:
+            dep_node = dep_graph.get_by_address(dep_address)
+
+            accum.append(dep_node)
+            accum += node_children_get(dep_graph, dep_node, include_self=False)
+
+    return accum
+
+
 def node_by_text(input_nodes, tokens):
-    #: @todo0/Soroosh Use preorder tree traversal. Skip all children when a node matches. Create another function node_by_text_tree, do NOT delete this function.
+    #: @todo0/Soroosh Use preorder tree traversal. Skip all children when a node matches. Create another function node_by_text_tree, do NOT delete this function. It is needed when finding stop nodes.
 
     addresses = []
     nodes = []
@@ -46,6 +61,8 @@ def extracted_flatten(extracted):
 
 # * the cost of the product
 def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens):
+    anchor_tokens = set(anchor_tokens)
+
     nodes = dep_graph.nodes
     price_nodes = node_by_text(nodes, anchor_tokens)
 
@@ -74,8 +91,14 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
                     if dep_node["tag"] in ("NUM",):
                         accepted = True
 
-                    #: @todo0/Feraidoon If an anchor_token exists in the children of dep_node, do NOT skip it.
-                    if dep_node["tag"] in acceptable_tags:
+                    #: @done/Feraidoon @test/sample_15 If an anchor_token exists in the children of dep_node, do NOT skip it.
+                    dep_node_children = node_children_get(dep_graph, dep_node)
+                    dep_node_children = set(map(lambda n: n["word"], dep_node_children))
+                    dep_node_children_anchors = dep_node_children & anchor_tokens
+                    if (
+                        len(dep_node_children_anchors) > 0
+                        or dep_node["tag"] in acceptable_tags
+                    ):
                         nums.append(dep_node)
                         add(
                             dep_node,
