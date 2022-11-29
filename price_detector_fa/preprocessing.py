@@ -16,7 +16,7 @@ def or_re(patterns):
 replacements = dict()
 replacements[f"\\bهر({or_re(amount_anchor_tokens)})\\b"] = f"هر \\1"
 replacements[
-    f"""\\b({or_re(product_name_anchor_tokens)})s+{or_re([
+    f"""\\b({or_re(product_name_anchor_tokens)})\\s+{or_re([
     'جهانی',
     'بازار',
     'کف بازار',
@@ -37,7 +37,7 @@ simple_replacements = {
 
 # ** regex token skips
 regex_token_skip = [
-    "{}({})?".format(
+    "{}\\s?({})?".format(
         or_re(
             [
                 "بیش",

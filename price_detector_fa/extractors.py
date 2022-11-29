@@ -185,7 +185,18 @@ def product_name_extract(
     if len(out) == 0:
         out += subject_extract(dep_graph, stop_nodes=stop_nodes)
 
-    #: @todo4/Feraidoon sort 'out' by indices
+    #: @done/Feraidoon sort 'out' by indices (see =sample_14=)
+    for sbj_group in out:
+        end_index = max(map(lambda n: n["address"], sbj_group["nodes"]))
+        sbj_group["end_token_index"] = ic(end_index)
+
+    out = sorted(
+        out,
+        key=lambda sbj_group: sbj_group["end_token_index"],
+        reverse=False,
+    )
+
+    # ic(out)
 
     return out
 
@@ -268,7 +279,10 @@ def all_extract(dep_graph: DependencyGraph):
     product_name_extracted = product_name_extract(
         dep_graph, node_lst_lst=unit_extracted, stop_nodes=stop_nodes
     )
-    ic(product_name_extracted, extracted_show(product_name_extracted))
+    ic(
+        # product_name_extracted,
+        extracted_show(product_name_extracted)
+    )
 
     return None
 
