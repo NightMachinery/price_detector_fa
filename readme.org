@@ -1,3 +1,12 @@
 #+TITLE: price_detector_fa
 
 =price_detector_fa= extracts product/price/amount tuples from Persian text using rule-based methods.
+
+* Installation
+1. Run the following in this project's directory:
+#+begin_example zsh
+pip install -e .
+bash install.sh
+#+end_example
+
+2. Install =graphviz= using your OS package manager.
