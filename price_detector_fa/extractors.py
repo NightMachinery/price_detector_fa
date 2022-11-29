@@ -164,13 +164,13 @@ def subject_extract(
     return output
 
 
-def cost_extract(dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **kwargs):
-    out = cost_extract_by_anchor_tokens(
+def product_name_extract(dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **kwargs):
+    out = product_name_extract_by_anchor_tokens(
         dep_graph, *args, stop_nodes=stop_nodes, **kwargs
     )
 
     if True or len(out) == 0:
-        out += cost_extract_by_node_lst_lst(
+        out += product_name_extract_by_node_lst_lst(
             dep_graph, *args, node_lst_lst=node_lst_lst, stop_nodes=stop_nodes, **kwargs
         )
 
@@ -182,18 +182,18 @@ def cost_extract(dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **
     return out
 
 
-def cost_extract_by_anchor_tokens(dep_graph: DependencyGraph, *args, **kwargs):
+def product_name_extract_by_anchor_tokens(dep_graph: DependencyGraph, *args, **kwargs):
     anchor_tokens = product_name_anchor_tokens
 
     nodes = dep_graph.nodes
     cost_nodes = node_by_text(nodes, anchor_tokens)
 
-    return cost_extract_by_nodes(
+    return product_name_extract_by_nodes(
         dep_graph, *args, **kwargs, cost_nodes=cost_nodes["nodes"]
     )
 
 
-def cost_extract_by_node_lst_lst(
+def product_name_extract_by_node_lst_lst(
     *args,
     node_lst_lst,
     **kwargs,
@@ -202,10 +202,10 @@ def cost_extract_by_node_lst_lst(
     for extracted in node_lst_lst:
         cost_nodes.append(extracted["nodes"][-1])
 
-    return cost_extract_by_nodes(*args, **kwargs, cost_nodes=cost_nodes)
+    return product_name_extract_by_nodes(*args, **kwargs, cost_nodes=cost_nodes)
 
 
-def cost_extract_by_nodes(dep_graph: DependencyGraph, stop_nodes, cost_nodes):
+def product_name_extract_by_nodes(dep_graph: DependencyGraph, stop_nodes, cost_nodes):
     nodes = dep_graph.nodes
 
     stop_nodes_addresses = list(map(lambda x: x["address"], stop_nodes))
@@ -255,10 +255,10 @@ def all_extract(dep_graph: DependencyGraph):
     stop_nodes += extracted_flatten(price_extracted)
     stop_nodes += extracted_flatten(unit_extracted)
 
-    cost_extracted = cost_extract(
+    product_name_extracted = product_name_extract(
         dep_graph, node_lst_lst=unit_extracted, stop_nodes=stop_nodes
     )
-    ic(cost_extracted, extracted_show(cost_extracted))
+    ic(product_name_extracted, extracted_show(product_name_extracted))
 
     return None
 

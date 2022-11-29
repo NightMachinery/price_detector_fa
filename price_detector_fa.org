@@ -1567,7 +1567,7 @@ ic| s_chunks: '[قیمت طلا NP] [یک گرم ۳۵۹ هزار تومان و �
 #+begin_example
 ic| extracted_show(price_extracted): ['مقدار:  ۳۵۹ هزار تومان', 'مقدار:  ۱۰۰ هزار تومان']
 ic| extracted_show(unit_extracted): ['مقدار:  یک گرم']
-ic| cost_extracted: [{'nodes': [{'address': 2,
+ic| product_name_extracted: [{'nodes': [{'address': 2,
                                  'ctag': 'N',
                                  'deps': defaultdict(<class 'list'>, {}),
                                  'feats': '_',
@@ -1576,6 +1576,6 @@ ic| cost_extracted: [{'nodes': [{'address': 2,
                                  'rel': 'MOZ',
                                  'tag': 'N',
                                  'word': 'طلا'}]}]
-    extracted_show(cost_extracted): ['مقدار:  طلا']
+    extracted_show(product_name_extracted): ['مقدار:  طلا']
 #+end_example
 
