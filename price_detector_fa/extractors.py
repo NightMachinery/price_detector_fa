@@ -23,9 +23,21 @@ def node_children_get(dep_graph: DependencyGraph, node, include_self=True):
     return accum
 
 
-def node_by_text(input_nodes, tokens):
-    #: @todo0/Soroosh Use preorder tree traversal. Skip all children when a node matches. Create another function node_by_text_tree, do NOT delete this function. It is needed when finding stop nodes.
+def node_by_text_tree(input_nodes, tokens):
+    #: @todo0/Soroosh Use preorder tree traversal. Skip all children when a node matches.
 
+    addresses = []
+    nodes = []
+
+    for i, node in input_nodes.items():
+        if node["word"] in tokens:
+            addresses.append(i)
+            nodes.append(node)
+
+    return dict(addresses=addresses, nodes=nodes)
+
+
+def node_by_text(input_nodes, tokens):
     addresses = []
     nodes = []
 
@@ -65,7 +77,7 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
     anchor_tokens = set(anchor_tokens)
 
     nodes = dep_graph.nodes
-    price_nodes = node_by_text(nodes, anchor_tokens)
+    price_nodes = node_by_text_tree(nodes, anchor_tokens)
 
     output = []
     for price_node in price_nodes["nodes"]:
@@ -229,7 +241,7 @@ def product_name_extract_by_anchor_tokens(dep_graph: DependencyGraph, *args, **k
     anchor_tokens = product_name_anchor_tokens
 
     nodes = dep_graph.nodes
-    cost_nodes = node_by_text(nodes, anchor_tokens)
+    cost_nodes = node_by_text_tree(nodes, anchor_tokens)
 
     return product_name_extract_by_nodes(
         dep_graph, *args, **kwargs, cost_nodes=cost_nodes["nodes"]
