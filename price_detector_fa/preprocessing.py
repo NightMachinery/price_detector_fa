@@ -1,7 +1,7 @@
 # * imports
 from .utils import *
 from .hardcoded import (
-  # price_tokens,
+  # price_anchor_tokens,
   amount_anchor_tokens,
   product_name_anchor_tokens,
   )

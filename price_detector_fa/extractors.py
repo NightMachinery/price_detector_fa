@@ -1,7 +1,7 @@
 # * imports
 from .utils import *
 from .hardcoded import (
-  price_tokens,
+  price_anchor_tokens,
   amount_anchor_tokens,
   product_name_anchor_tokens,
   )
@@ -45,7 +45,7 @@ def extracted_flatten(extracted):
 
 
 # * the cost of the product
-def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_tokens):
+def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens):
     nodes = dep_graph.nodes
     price_nodes = node_by_text(nodes, anchor_tokens)
 

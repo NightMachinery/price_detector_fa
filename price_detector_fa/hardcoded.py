@@ -1,6 +1,6 @@
 #: @todo Add more.
 # * cost/price units
-price_tokens = [
+price_anchor_tokens = [
     "تومان",
     "تومن",
     "دلار",
