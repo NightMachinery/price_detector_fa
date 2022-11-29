@@ -15,7 +15,7 @@ price_tokens = [
 ]
 
 # * amount units
-unit_tokens = [
+amount_anchor_tokens = [
     "گرم",
     "تن",
     "کیلو",

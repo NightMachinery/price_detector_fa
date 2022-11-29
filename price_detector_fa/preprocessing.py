@@ -2,7 +2,7 @@
 from .utils import *
 from .hardcoded import (
   # price_tokens,
-  unit_tokens,
+  amount_anchor_tokens,
   product_name_anchor_tokens,
   )
 
@@ -14,7 +14,7 @@ def or_re(patterns):
 # * rules
 # ** regex replacements
 replacements = dict()
-replacements[f"bهر({or_re(unit_tokens)})b"] = f"هر 1"
+replacements[f"bهر({or_re(amount_anchor_tokens)})b"] = f"هر 1"
 replacements[
     f"""b({or_re(product_name_anchor_tokens)})s+{or_re([
     'جهانی',

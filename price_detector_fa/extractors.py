@@ -2,7 +2,7 @@
 from .utils import *
 from .hardcoded import (
   price_tokens,
-  unit_tokens,
+  amount_anchor_tokens,
   product_name_anchor_tokens,
   )
 
@@ -107,7 +107,7 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_tokens):
 
 # * the amount of the product
 def unit_extract(*args, **kwargs):
-    return price_extract(*args, **kwargs, anchor_tokens=unit_tokens)
+    return price_extract(*args, **kwargs, anchor_tokens=amount_anchor_tokens)
 
 
 # * the product name
