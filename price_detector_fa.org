@@ -1484,9 +1484,9 @@ ic(extracted_show(price_extract(sample_2_ht)))
 ic(extracted_show(price_extract(sample_3_ht)))
 
 print('')
-ic(extracted_show(unit_extract(sample_1_ht)))
-ic(extracted_show(unit_extract(sample_2_ht)))
-ic(extracted_show(unit_extract(sample_3_ht)))
+ic(extracted_show(amount_extract(sample_1_ht)))
+ic(extracted_show(amount_extract(sample_2_ht)))
+ic(extracted_show(amount_extract(sample_3_ht)))
 None
 #+end_src
 
@@ -1495,9 +1495,9 @@ ic| extracted_show(price_extract(sample_1_ht)): ['مقدار:  ۲۴ هزار ت�
 ic| extracted_show(price_extract(sample_2_ht)): ['مقدار:  یک میلیون و ۳۵۹ هزار تومان', 'مقدار:  ۱۵ میلیون و ۱۰۰ هزار تومان']
 ic| extracted_show(price_extract(sample_3_ht)): ['مقدار:  ۵۳۰ دلار']
 
-ic| extracted_show(unit_extract(sample_1_ht)): ['مقدار:  ۵ ساعته']
-ic| extracted_show(unit_extract(sample_2_ht)): ['مقدار:  یک گرم']
-ic| extracted_show(unit_extract(sample_3_ht)): ['مقدار:  یک تن']
+ic| extracted_show(amount_extract(sample_1_ht)): ['مقدار:  ۵ ساعته']
+ic| extracted_show(amount_extract(sample_2_ht)): ['مقدار:  یک گرم']
+ic| extracted_show(amount_extract(sample_3_ht)): ['مقدار:  یک تن']
 #+end_example
 
 ** Test

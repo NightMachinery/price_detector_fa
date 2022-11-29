@@ -106,7 +106,7 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
 
 
 # * the amount of the product
-def unit_extract(*args, **kwargs):
+def amount_extract(*args, **kwargs):
     return price_extract(*args, **kwargs, anchor_tokens=amount_anchor_tokens)
 
 
@@ -238,7 +238,7 @@ def all_extract(dep_graph: DependencyGraph):
     price_extracted = price_extract(dep_graph)
     ic(extracted_show(price_extracted))
 
-    unit_extracted = unit_extract(dep_graph)
+    unit_extracted = amount_extract(dep_graph)
     ic(extracted_show(unit_extracted))
 
     nodes = dep_graph.nodes
