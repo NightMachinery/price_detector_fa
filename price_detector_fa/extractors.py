@@ -3,7 +3,7 @@ from .utils import *
 from .hardcoded import (
   price_tokens,
   unit_tokens,
-  cost_tokens,
+  product_name_anchor_tokens,
   )
 
 # * helper functions
@@ -183,7 +183,7 @@ def cost_extract(dep_graph: DependencyGraph, *args, stop_nodes, node_lst_lst, **
 
 
 def cost_extract_by_anchor_tokens(dep_graph: DependencyGraph, *args, **kwargs):
-    anchor_tokens = cost_tokens
+    anchor_tokens = product_name_anchor_tokens
 
     nodes = dep_graph.nodes
     cost_nodes = node_by_text(nodes, anchor_tokens)

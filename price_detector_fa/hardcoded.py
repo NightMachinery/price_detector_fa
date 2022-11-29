@@ -1,5 +1,5 @@
 #: @todo Add more.
-# * cost units
+# * cost/price units
 price_tokens = [
     "تومان",
     "تومن",
@@ -25,7 +25,7 @@ unit_tokens = [
 ]
 
 # * product name anchors
-cost_tokens = [
+product_name_anchor_tokens = [
     "قیمت",
     "ارزش",
     "بها",

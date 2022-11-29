@@ -3,7 +3,7 @@ from .utils import *
 from .hardcoded import (
   # price_tokens,
   unit_tokens,
-  cost_tokens,
+  product_name_anchor_tokens,
   )
 
 # * helper functions
@@ -16,7 +16,7 @@ def or_re(patterns):
 replacements = dict()
 replacements[f"bهر({or_re(unit_tokens)})b"] = f"هر 1"
 replacements[
-    f"""b({or_re(cost_tokens)})s+{or_re([
+    f"""b({or_re(product_name_anchor_tokens)})s+{or_re([
     'جهانی',
     'بازار',
     'کف بازار',
@@ -36,7 +36,7 @@ simple_replacements = {
 }
 
 # ** regex token skips
-regex_skip = [
+regex_token_skip = [
     "%s(%s)?".format(
         or_re([
             "بیش",
@@ -45,11 +45,11 @@ regex_skip = [
         "تر",
     ),
 ]
-regex_skip = list(map(re.compile, regex_skip))
+regex_token_skip = list(map(re.compile, regex_token_skip))
 
 # * main functions
 def preprocess(text: str):
-    #: @todo0/Feraidoon implement regex_skip
+    #: @todo0/Feraidoon implement regex_token_skip
     #: * @todo5/Hoseini
     #: ** recreate word_tokenize that returns {tokens, indices} (indices should include both start and end indices)
     #: ** do a first pass without any preprocessing and get A from word_tokenize_with_indices
