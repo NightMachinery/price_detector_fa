@@ -23,18 +23,26 @@ def node_children_get(dep_graph: DependencyGraph, node, include_self=True):
     return accum
 
 
-def node_by_text_tree(input_nodes, tokens):
-    #: @todo0/Soroosh Use preorder tree traversal. Skip all children when a node matches.
-
-    addresses = []
-    nodes = []
-
-    for i, node in input_nodes.items():
+def node_by_text_tree(dep_graph: DependencyGraph, input_nodes, tokens):
+    #: @done/Soroosh Use preorder tree traversal. Skip all children when a node matches. sample_15.
+    
+    def preorder(node, tokens):
+        addresses = []
+        nodes = []
         if node["word"] in tokens:
-            addresses.append(i)
+            addresses.append(node["address"])
             nodes.append(node)
+        else:
+            for dep, dep_addresses in node["deps"].items():
+                for dep_address in dep_addresses:
+                    dep_node = dep_graph.get_by_address(dep_address)
+                    child_nodes = preorder(dep_node, tokens)
+                    addresses = addresses + child_nodes["addresses"]
+                    nodes = nodes + child_nodes["nodes"]
+        return dict(addresses=addresses, nodes=nodes)
+        
 
-    return dict(addresses=addresses, nodes=nodes)
+    return preorder(input_nodes[0], tokens)
 
 
 def node_by_text(input_nodes, tokens):
@@ -77,7 +85,7 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
     anchor_tokens = set(anchor_tokens)
 
     nodes = dep_graph.nodes
-    price_nodes = node_by_text_tree(nodes, anchor_tokens)
+    price_nodes = node_by_text_tree(dep_graph, nodes, anchor_tokens)
 
     output = []
     for price_node in price_nodes["nodes"]:
@@ -241,7 +249,7 @@ def product_name_extract_by_anchor_tokens(dep_graph: DependencyGraph, *args, **k
     anchor_tokens = product_name_anchor_tokens
 
     nodes = dep_graph.nodes
-    cost_nodes = node_by_text_tree(nodes, anchor_tokens)
+    cost_nodes = node_by_text_tree(dep_graph, nodes, anchor_tokens)
 
     return product_name_extract_by_nodes(
         dep_graph, *args, **kwargs, cost_nodes=cost_nodes["nodes"]
