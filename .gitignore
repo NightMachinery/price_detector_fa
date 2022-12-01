@@ -2,3 +2,5 @@
 /resources/
 price_detector_fa.ipynb
 .ipynb_checkpoints/
+**/__pycache__/
+*.py[cod]

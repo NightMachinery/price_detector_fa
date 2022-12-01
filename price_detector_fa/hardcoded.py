@@ -47,5 +47,7 @@ subject_stop_words = [
     "بدون",
 ]
 
+CONTEXT_MAX_LENGTH = 15
+
 
 # * end

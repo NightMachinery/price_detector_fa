@@ -1,10 +1,13 @@
 # * @stdlib
 import re
+import itertools
+from collections import defaultdict
+import copy
 
 # * icecream
-from icecream import ic, colorize as ic_colorize
+# from icecream import ic, colorize as ic_colorize
 
-ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
+# ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
 # * nltk
 from nltk import DependencyGraph
 

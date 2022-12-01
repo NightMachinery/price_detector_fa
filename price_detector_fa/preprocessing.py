@@ -63,8 +63,9 @@ def preprocess(text: str):
 
     # text = normalizer.normalize(text)
     #: breaks decimal numbers (like 89.12)
-
-    tokens = word_tokenize(ic(text))
+    
+    print(text)
+    tokens = word_tokenize(text)
     tokens_processed = []
 
     for i, token in enumerate(tokens):
