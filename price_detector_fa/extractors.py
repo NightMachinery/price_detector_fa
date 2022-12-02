@@ -56,6 +56,19 @@ def node_by_text(input_nodes, tokens):
 
     return dict(addresses=addresses, nodes=nodes)
 
+def create_word(word, address=-2):
+    return dict(nodes=[{
+        "address": address,
+        "word": word,
+        "lemma": None,
+        "ctag": None,
+        "tag": None,
+        "feats": None,
+        "head": None,
+        "deps": defaultdict(list),
+        "rel": None,
+    }])
+
 def create_YEK(address=-2):
     return dict(nodes=[{
         "address": address,
@@ -85,12 +98,16 @@ def nodes_text(nodes):
 def extracted_show(extracted):
     return [lst_str(nodes_text(i["nodes"])) for i in extracted]
 
-def matching_show(matching):
+def matching_show(matching, spans):
     #: @todo extract extra fields such as price units
     return {
-        "product_name": extracted_show([matching["product_name"]]),
-        "units": extracted_show(matching["units"]),
-        "prices": extracted_show(matching["prices"]),
+        "product_name": lst_str(nodes_text(matching["product_name"]["nodes"])),
+        "product_name_span": (spans[matching['product_name']["nodes"][0]["address"]][0], spans[matching['product_name']["nodes"][-1]["address"]][1]),
+        "product_unit": extracted_show(matching["units"]),
+        "product_amount": extracted_show(matching["unit_amounts"]),
+        "price_unit": extracted_show(matching["prices"]),
+        "price_amount": extracted_show(matching["price_amounts"]),
+
     }
 
 
@@ -425,31 +442,6 @@ def normalize_matching(matching):
     prices = list(reversed(prices))
     units = list(reversed(matched_units_rev))
     
-    #: force numbers in product_name to "YEK"s
-    number_candidates = []
-    for word in sorted(matching["product_name"]["nodes"], key=lambda x: x["address"]):
-        if word["tag"] in ("NUM", "CONJ"):
-            number_candidates.append(word)
-    number = []
-    last_element_address = -1
-    for i, word in enumerate(number_candidates):
-        if last_element_address == -1:
-            if word["tag"] == "NUM":
-                last_element_address = word["address"]
-                number.append(word)
-        else:
-            if word["address"] == last_element_address + 1:
-                last_element_address += 1
-                number.append(word)
-            else:
-                break
-    #: * trim CONJ at end of number
-    last_conj = 0
-    for word in reversed(number):
-        if word["tag"] == "CONJ":
-            last_conj += 1
-        else:
-            break
     new_unit = {"nodes": number_extract(matching["product_name"]["nodes"])}
     if len(new_unit["nodes"]) > 0:
         changed = False
@@ -462,10 +454,52 @@ def normalize_matching(matching):
             for i, word in enumerate(product_name):
                 if word["address"] == new_unit["nodes"][-1]["address"]:
                     product_name = product_name[i+1:]
+                    break
             matching["product_name"]["nodes"] = product_name
-
+    
+    price_amounts = []
+    prices_tmp = []
+    for price in prices:
+        new_unit = {"nodes": number_extract(price["nodes"])}
+        if len(new_unit["nodes"]) > 0:
+            price_amounts.append(new_unit)
+            price_nodes = list(sorted(price["nodes"], key=lambda x: x["address"]))
+            for i, word in enumerate(price_nodes):
+                if word["address"] == new_unit["nodes"][-1]["address"]:
+                    price_nodes = price_nodes[i+1:]
+                    break
+            price["nodes"] = price_nodes
+        else:
+            price_amounts.append(create_YEK(price["nodes"][0]["address"]))
+        prices_tmp.append(price)
+    prices = prices_tmp
+    
+    unit_amounts = []
+    units_tmp = []
+    for unit in units:
+        new_unit = {"nodes": number_extract(unit["nodes"])}
+        if len(new_unit["nodes"]) > 0:
+            unit_amounts.append(new_unit)
+            unit_nodes = list(sorted(unit["nodes"], key=lambda x: x["address"]))
+            for i, word in enumerate(unit_nodes):
+                if word["address"] == new_unit["nodes"][-1]["address"]:
+                    unit_nodes = unit_nodes[i+1:]
+                    break
+            unit["nodes"] = unit_nodes
+        else:
+            unit_amounts.append(create_YEK(unit["nodes"][0]["address"]))
+        if len(unit["nodes"]) == 0:
+            unit = create_word("عدد", unit_amounts[-1]["nodes"][-1]["address"])
+        units_tmp.append(unit)
+    units = units_tmp
         
-    return [dict(product_name=matching["product_name"], prices=prices, units=units)]
+    return [dict(
+        product_name=matching["product_name"], 
+        prices=prices, 
+        price_amounts=price_amounts,
+        units=units,
+        unit_amounts=unit_amounts,
+    )]
                 
         
         
@@ -474,13 +508,15 @@ def normalize_matching(matching):
         
 
 # * putting it all together
-def all_extract(dep_graph: DependencyGraph):
+def all_extract(dep_graph: DependencyGraph, spans, disp=False):
     #: @todo6/Hoseini
     price_extracted = price_extract(dep_graph)
-    print(extracted_show(price_extracted))
+    if disp:
+        print(extracted_show(price_extracted))
 
     unit_extracted = amount_extract(dep_graph)
-    print(extracted_show(unit_extracted))
+    if disp:
+        print(extracted_show(unit_extracted))
 
     nodes = dep_graph.nodes
     stop_nodes = node_by_text(
@@ -493,19 +529,17 @@ def all_extract(dep_graph: DependencyGraph):
     product_name_extracted = product_name_extract(
         dep_graph, node_lst_lst=unit_extracted, stop_nodes=stop_nodes
     )
-    print(
-        # product_name_extracted,
-        extracted_show(product_name_extracted)
-    )
+    if disp:
+        print(
+            # product_name_extracted,
+            extracted_show(product_name_extracted)
+        )
     matchings = find_matchings(dep_graph, price_extracted, unit_extracted, product_name_extracted)
     matchings_normalized = list(itertools.chain.from_iterable(normalize_matching(m) for m in matchings))
-    print()
-    for matching in matchings_normalized:
-        print(matching_show(matching))
-    print("icecream is bad!")
+    
 
 
-    return None
+    return matchings_normalized
 
     #: min(len(price), len(objects))
     #:

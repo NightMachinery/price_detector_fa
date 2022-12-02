@@ -2,6 +2,11 @@
 
 =price_detector_fa= extracts product/price/amount tuples from Persian text using rule-based methods.
 
+* Contributers
+Feraidoon Mehri: 
+Fahime Hosseini: 400210969
+Soroush Vafaie Tabar: 401208945
+
 * Installation
 1. Run the following in this project's directory:
 #+begin_example zsh

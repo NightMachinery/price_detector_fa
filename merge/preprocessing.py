@@ -44,9 +44,8 @@ regex_token_skip = [
 ]
 regex_token_skip = list(map(re.compile, regex_token_skip))
 
-
 # * main functions
-def preprocess(text: str, disp=False):
+def preprocess(text: str):
     #: @done/Feraidoon implement regex_token_skip
     #: * @done/Hoseini
     #: ** recreate word_tokenize that returns {tokens, indices} (indices should include both start and end indices)
@@ -54,10 +53,8 @@ def preprocess(text: str, disp=False):
     #: *** do a second pass with word_tokenize after preprocessing and get B
     #: *** match each token in B with the first unmatched token in A that shares its text. (Normalize the A's token's text first.)
     ##
-    
-    if disp:
-        print(text)
-    tokens_raw, indices_raw = word_tokenizer.tokenize_with_indices(text)
+
+    tokens_raw, indices_raw = word_tokenizer.tokenize_with_indices(ic(text))
     tokens_converted = []
     for token in tokens_raw:
         if token in simple_replacements.keys():
@@ -71,9 +68,7 @@ def preprocess(text: str, disp=False):
     # text = normalizer.normalize(text)
     #: breaks decimal numbers (like 89.12)
 
-    if disp:
-        print(text)
-    tokens = word_tokenizer.tokenize_with_indices(text)[0]
+    tokens = word_tokenizer.tokenize_with_indices(ic(text))[0]
 
     tokens_processed = []
     tokens_indices = []
@@ -101,6 +96,3 @@ def preprocess(text: str, disp=False):
 
 
     return tokens_processed, tokens_indices
-
-
-# * end

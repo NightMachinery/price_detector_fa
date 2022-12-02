@@ -1,18 +1,17 @@
 # * @stdlib
 from __future__ import unicode_literals
 import re, codecs
-import itertools
-from collections import defaultdict
-import copy
 
+#hardcoded tokens
 from .hardcoded import (
     amount_anchor_tokens,
+    product_name_anchor_tokens,
 )
 
 # * icecream
-# from icecream import ic, colorize as ic_colorize
+from icecream import ic, colorize as ic_colorize
 
-# ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
+ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
 # * nltk
 from nltk import DependencyGraph
 
@@ -56,7 +55,6 @@ def find_spans (dep_graph, token_indices):
     return spans
 
 word_tokenizer = WordTokenizer_with_indices()
-sentence_tokenizer = SentenceTokenizer()
 normalizer = Normalizer()
 stemmer = Stemmer()
 lemmatizer = Lemmatizer()
