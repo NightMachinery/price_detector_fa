@@ -62,7 +62,7 @@ def create_YEK(address=-2):
         "word": "یک",
         "lemma": None,
         "ctag": None,
-        "tag": None,
+        "tag": "NUM",
         "feats": None,
         "head": None,
         "deps": defaultdict(list),
@@ -87,7 +87,6 @@ def extracted_show(extracted):
 
 def matching_show(matching):
     #: @todo extract extra fields such as price units
-    print("icecream khare")
     return {
         "product_name": extracted_show([matching["product_name"]]),
         "units": extracted_show(matching["units"]),
@@ -102,6 +101,38 @@ def extracted_flatten(extracted):
 
     return out
 
+def extract(
+    dep_graph: DependencyGraph,
+    node,
+    recur_acceptable_tags=(
+        "NUM",
+        "CONJ",
+    ),
+    acceptable_tags=("NUM",),
+    anchor_tokens=price_anchor_tokens,
+):
+    nodes = []
+    for dep, dep_addresses in node["deps"].items():
+        for dep_address in dep_addresses:
+            dep_node = dep_graph.get_by_address(dep_address)
+            # print(dep, dep_node)
+
+            #: @done/Feraidoon @test/sample_15 If an anchor_token exists in the children of dep_node, do NOT skip it.
+            dep_node_children = node_children_get(dep_graph, dep_node)
+            dep_node_children = set(map(lambda n: n["word"], dep_node_children))
+            dep_node_children_anchors = dep_node_children & set(anchor_tokens)
+            if (
+                len(dep_node_children_anchors) > 0
+                or dep_node["tag"] in acceptable_tags
+            ):
+                nodes = nodes + [dep_node] + extract(
+                    dep_graph,
+                    dep_node,
+                    acceptable_tags=recur_acceptable_tags,
+                    recur_acceptable_tags=recur_acceptable_tags,
+                    anchor_tokens=anchor_tokens,
+                )
+    return nodes
 
 # * the cost of the product
 def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens):
@@ -114,45 +145,11 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
     for price_node in price_nodes["nodes"]:
         # print(price_nodes)
 
-        nums = [price_node]
-        accepted = False
+        
 
-        def add(
-            node,
-            recur_acceptable_tags=(
-                "NUM",
-                "CONJ",
-            ),
-            acceptable_tags=("NUM",),
-        ):
-            nonlocal accepted
+        nums = [price_node] + extract(dep_graph, price_node, anchor_tokens=anchor_tokens)
 
-            for dep, dep_addresses in node["deps"].items():
-                for dep_address in dep_addresses:
-                    dep_node = dep_graph.get_by_address(dep_address)
-                    # print(dep, dep_node)
-
-                    if dep_node["tag"] in ("NUM",):
-                        accepted = True
-
-                    #: @done/Feraidoon @test/sample_15 If an anchor_token exists in the children of dep_node, do NOT skip it.
-                    dep_node_children = node_children_get(dep_graph, dep_node)
-                    dep_node_children = set(map(lambda n: n["word"], dep_node_children))
-                    dep_node_children_anchors = dep_node_children & anchor_tokens
-                    if (
-                        len(dep_node_children_anchors) > 0
-                        or dep_node["tag"] in acceptable_tags
-                    ):
-                        nums.append(dep_node)
-                        add(
-                            dep_node,
-                            acceptable_tags=recur_acceptable_tags,
-                            recur_acceptable_tags=recur_acceptable_tags,
-                        )
-
-        add(price_node)
-
-        if not accepted:
+        if not any((dep_node["tag"]=="NUM" for dep_node in nums)):
             continue
 
         # nums = list(reversed(nums))
@@ -321,7 +318,10 @@ def product_name_extract_by_nodes(dep_graph: DependencyGraph, stop_nodes, cost_n
 
 def find_matchings(dep_graph, prices_extracted, units_extracted, product_names_extracted):
     matchings = []
-    prices, units, product_names = prices_extracted.copy(), units_extracted.copy(), product_names_extracted.copy()
+    prices, units, product_names = tuple(
+        sorted(x.copy(), key=lambda x: x["nodes"][0]["address"]) 
+        for x in(prices_extracted, units_extracted, product_names_extracted)
+    )
     
     while True:
         if len(product_names) == 1:
@@ -341,7 +341,7 @@ def find_matchings(dep_graph, prices_extracted, units_extracted, product_names_e
         if last_related_price_index == -1:
             unit_limit_address = product_names[0]["nodes"][0]["address"]
         else:
-            unit_limit_address = price[last_related_price_index]["nodes"][0]["address"]
+            unit_limit_address = prices[last_related_price_index]["nodes"][0]["address"]
         for i, unit in enumerate(units):
             if unit["nodes"][0]["address"] < unit_limit_address:
                 last_related_unit_index = i
@@ -396,15 +396,49 @@ def normalize_matching(matching):
             
     prices = list(reversed(prices))
     units = list(reversed(matched_units_rev))
-    # @todo force numbers in product_name to "YEK"s
     
-    return [dict(product_name=matching["product_name"], prices=prices, units=units)]
-        
-    
-        
-    
-            
+    #: force numbers in product_name to "YEK"s
+    number_candidates = []
+    for word in sorted(matching["product_name"]["nodes"], key=lambda x: x["address"]):
+        if word["tag"] in ("NUM", "CONJ"):
+            number_candidates.append(word)
+    number = []
+    last_element_address = -1
+    for i, word in enumerate(number_candidates):
+        if last_element_address == -1:
+            if word["tag"] == "NUM":
+                last_element_address = word["address"]
+                number.append(word)
+        else:
+            if word["address"] == last_element_address + 1:
+                last_element_address += 1
+                number.append(word)
+            else:
+                break
+    #: * trim CONJ at end of number
+    last_conj = 0
+    for word in reversed(number):
+        if word["tag"] == "CONJ":
+            last_conj += 1
+        else:
+            break
+    new_unit = {"nodes": number[:-last_conj] if last_conj != 0 else number}
+    if len(new_unit["nodes"]) > 0:
+        changed = False
+        for i, unit in enumerate(units):
+            if unit["nodes"][0]["word"] == "یک" and len(unit["nodes"]) == 1:
+                units[i] = copy.deepcopy(new_unit)
+                changed = True
+        product_name = list(sorted(matching["product_name"]["nodes"], key=lambda x: x["address"]))
+        if changed:
+            for i, word in enumerate(product_name):
+                if word["address"] == new_unit["nodes"][-1]["address"]:
+                    product_name = product_name[i+1:]
+            matching["product_name"]["nodes"] = product_name
 
+        
+    return [dict(product_name=matching["product_name"], prices=prices, units=units)]
+                
         
         
             
@@ -437,9 +471,11 @@ def all_extract(dep_graph: DependencyGraph):
     )
     matchings = find_matchings(dep_graph, price_extracted, unit_extracted, product_name_extracted)
     matchings_normalized = list(itertools.chain.from_iterable(normalize_matching(m) for m in matchings))
+    print()
     for matching in matchings_normalized:
-        print(matching)
         print(matching_show(matching))
+    print("icecream is bad!")
+
 
     return None
 
