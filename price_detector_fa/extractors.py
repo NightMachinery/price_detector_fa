@@ -134,6 +134,34 @@ def extract(
                 )
     return nodes
 
+def number_extract(nodes):
+    number_candidates = []
+    for word in sorted(nodes, key=lambda x: x["address"]):
+        if word["tag"] in ("NUM", "CONJ"):
+            number_candidates.append(word)
+    number = []
+    last_element_address = -1
+    for i, word in enumerate(number_candidates):
+        if last_element_address == -1:
+            if word["tag"] == "NUM":
+                last_element_address = word["address"]
+                number.append(word)
+        else:
+            if word["address"] == last_element_address + 1:
+                last_element_address += 1
+                number.append(word)
+            else:
+                break
+    #: * trim CONJ at end of number
+    last_conj = 0
+    for word in reversed(number):
+        if word["tag"] == "CONJ":
+            last_conj += 1
+        else:
+            break
+    return number[:-last_conj] if last_conj != 0 else number
+
+
 # * the cost of the product
 def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens):
     anchor_tokens = set(anchor_tokens)
@@ -422,7 +450,7 @@ def normalize_matching(matching):
             last_conj += 1
         else:
             break
-    new_unit = {"nodes": number[:-last_conj] if last_conj != 0 else number}
+    new_unit = {"nodes": number_extract(matching["product_name"]["nodes"])}
     if len(new_unit["nodes"]) > 0:
         changed = False
         for i, unit in enumerate(units):
