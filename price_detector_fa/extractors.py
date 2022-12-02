@@ -25,7 +25,7 @@ def node_children_get(dep_graph: DependencyGraph, node, include_self=True):
 
 def node_by_text_tree(dep_graph: DependencyGraph, input_nodes, tokens):
     #: @done/Soroosh Use preorder tree traversal. Skip all children when a node matches. sample_15.
-    
+
     def preorder(node, tokens):
         addresses = []
         nodes = []
@@ -40,7 +40,6 @@ def node_by_text_tree(dep_graph: DependencyGraph, input_nodes, tokens):
                     addresses = addresses + child_nodes["addresses"]
                     nodes = nodes + child_nodes["nodes"]
         return dict(addresses=addresses, nodes=nodes)
-        
 
     return preorder(input_nodes[0], tokens)
 
@@ -56,32 +55,41 @@ def node_by_text(input_nodes, tokens):
 
     return dict(addresses=addresses, nodes=nodes)
 
+
 def create_word(word, address=-2):
-    return dict(nodes=[{
-        "address": address,
-        "word": word,
-        "lemma": None,
-        "ctag": None,
-        "tag": None,
-        "feats": None,
-        "head": None,
-        "deps": defaultdict(list),
-        "rel": None,
-    }])
+    return dict(
+        nodes=[
+            {
+                "address": address,
+                "word": word,
+                "lemma": None,
+                "ctag": None,
+                "tag": None,
+                "feats": None,
+                "head": None,
+                "deps": defaultdict(list),
+                "rel": None,
+            }
+        ]
+    )
+
 
 def create_YEK(address=-2):
-    return dict(nodes=[{
-        "address": address,
-        "word": "یک",
-        "lemma": None,
-        "ctag": None,
-        "tag": "NUM",
-        "feats": None,
-        "head": None,
-        "deps": defaultdict(list),
-        "rel": None,
-    }])
-
+    return dict(
+        nodes=[
+            {
+                "address": address,
+                "word": "یک",
+                "lemma": None,
+                "ctag": None,
+                "tag": "NUM",
+                "feats": None,
+                "head": None,
+                "deps": defaultdict(list),
+                "rel": None,
+            }
+        ]
+    )
 
 
 def lst_str(lst):
@@ -98,16 +106,19 @@ def nodes_text(nodes):
 def extracted_show(extracted):
     return [lst_str(nodes_text(i["nodes"])) for i in extracted]
 
+
 def matching_show(matching, spans):
     #: @todo extract extra fields such as price units
     return {
         "product_name": lst_str(nodes_text(matching["product_name"]["nodes"])),
-        "product_name_span": (spans[matching['product_name']["nodes"][0]["address"]][0], spans[matching['product_name']["nodes"][-1]["address"]][1]),
+        "product_name_span": (
+            spans[matching["product_name"]["nodes"][0]["address"]][0],
+            spans[matching["product_name"]["nodes"][-1]["address"]][1],
+        ),
         "product_unit": extracted_show(matching["units"]),
         "product_amount": extracted_show(matching["unit_amounts"]),
         "price_unit": extracted_show(matching["prices"]),
         "price_amount": extracted_show(matching["price_amounts"]),
-
     }
 
 
@@ -117,6 +128,7 @@ def extracted_flatten(extracted):
         out += i["nodes"]
 
     return out
+
 
 def extract(
     dep_graph: DependencyGraph,
@@ -138,18 +150,20 @@ def extract(
             dep_node_children = node_children_get(dep_graph, dep_node)
             dep_node_children = set(map(lambda n: n["word"], dep_node_children))
             dep_node_children_anchors = dep_node_children & set(anchor_tokens)
-            if (
-                len(dep_node_children_anchors) > 0
-                or dep_node["tag"] in acceptable_tags
-            ):
-                nodes = nodes + [dep_node] + extract(
-                    dep_graph,
-                    dep_node,
-                    acceptable_tags=recur_acceptable_tags,
-                    recur_acceptable_tags=recur_acceptable_tags,
-                    anchor_tokens=anchor_tokens,
+            if len(dep_node_children_anchors) > 0 or dep_node["tag"] in acceptable_tags:
+                nodes = (
+                    nodes
+                    + [dep_node]
+                    + extract(
+                        dep_graph,
+                        dep_node,
+                        acceptable_tags=recur_acceptable_tags,
+                        recur_acceptable_tags=recur_acceptable_tags,
+                        anchor_tokens=anchor_tokens,
+                    )
                 )
     return nodes
+
 
 def number_extract(nodes):
     number_candidates = []
@@ -190,11 +204,11 @@ def price_extract(dep_graph: DependencyGraph, anchor_tokens=price_anchor_tokens)
     for price_node in price_nodes["nodes"]:
         # print(price_nodes)
 
-        
+        nums = [price_node] + extract(
+            dep_graph, price_node, anchor_tokens=anchor_tokens
+        )
 
-        nums = [price_node] + extract(dep_graph, price_node, anchor_tokens=anchor_tokens)
-
-        if not any((dep_node["tag"]=="NUM" for dep_node in nums)):
+        if not any((dep_node["tag"] == "NUM" for dep_node in nums)):
             continue
 
         # nums = list(reversed(nums))
@@ -361,19 +375,24 @@ def product_name_extract_by_nodes(dep_graph: DependencyGraph, stop_nodes, cost_n
 
     return output
 
-def find_matchings(dep_graph, prices_extracted, units_extracted, product_names_extracted):
+
+def find_matchings(
+    dep_graph, prices_extracted, units_extracted, product_names_extracted
+):
     matchings = []
     prices, units, product_names = tuple(
-        sorted(x.copy(), key=lambda x: x["nodes"][0]["address"]) 
-        for x in(prices_extracted, units_extracted, product_names_extracted)
+        sorted(x.copy(), key=lambda x: x["nodes"][0]["address"])
+        for x in (prices_extracted, units_extracted, product_names_extracted)
     )
-    
+
     while True:
         if len(product_names) == 1:
-            matchings.append(dict(prices=prices, units=units, product_name=product_names[0]))
+            matchings.append(
+                dict(prices=prices, units=units, product_name=product_names[0])
+            )
         if len(product_names) <= 1:
             break
-        
+
         # find prices before next product_name
         last_related_price_index = -1
         for i, price in enumerate(prices):
@@ -393,9 +412,17 @@ def find_matchings(dep_graph, prices_extracted, units_extracted, product_names_e
             else:
                 break
         matchings.append(
-            dict(prices=prices[:last_related_price_index+1], units=units[:last_related_unit_index+1], product_name=product_names[0])
+            dict(
+                prices=prices[: last_related_price_index + 1],
+                units=units[: last_related_unit_index + 1],
+                product_name=product_names[0],
+            )
         )
-        prices, units, product_names = prices[last_related_price_index+1:], units[last_related_unit_index+1:], product_names[1:]
+        prices, units, product_names = (
+            prices[last_related_price_index + 1 :],
+            units[last_related_unit_index + 1 :],
+            product_names[1:],
+        )
     return matchings
     #: return matching regex (from left to right in eng) ( ((unit) object (price)* | object ((unit) price)*)* )
 
@@ -403,19 +430,21 @@ def find_matchings(dep_graph, prices_extracted, units_extracted, product_names_e
 def normalize_matching(matching):
     #: discard out of context parts
     #: @todo elements with distance more than MAX_CONTEXT_DISTANCE value than neareset part
-    
+
     matching = copy.deepcopy(matching)
-    
+
     #: may break a matching into multiple matchings or change it or remove it, returns a list of matchings
     if len(matching["prices"]) == 0:
         return []
-    
+
     if len(matching["units"]) == 0:
-        matching["units"] = [create_YEK(matching["product_name"]["nodes"][0]["address"])]
-    
+        matching["units"] = [
+            create_YEK(matching["product_name"]["nodes"][0]["address"])
+        ]
+
     if len(matching["units"]) == 1:
-        matching["units"] = matching["units"]*len(matching["prices"])
-    
+        matching["units"] = matching["units"] * len(matching["prices"])
+
     # match each price with a unit from end
     prices = list(reversed(matching["prices"]))
     units = list(reversed(matching["units"]))
@@ -427,21 +456,23 @@ def normalize_matching(matching):
             for j in range(i, range(len(prices))):
                 matched_units_rev.append(create_YEK(prices[i]["nodes"][0]["address"]))
             break
-        if i == (len(prices)-1):
+        if i == (len(prices) - 1):
             # for last price add whatever unit remained
             matched_units_rev.append(units[unit_index])
             unit_index += 1
         else:
-            if units[unit_index]["nodes"][0]["address"] > prices[i+1]["nodes"][0]["address"]:
+            if (
+                units[unit_index]["nodes"][0]["address"]
+                > prices[i + 1]["nodes"][0]["address"]
+            ):
                 matched_units_rev.append(units[units_index])
                 units_index += 1
             else:
                 matched_units_rev.append(create_YEK(prices[i]["nodes"][0]["address"]))
-                        
-            
+
     prices = list(reversed(prices))
     units = list(reversed(matched_units_rev))
-    
+
     new_unit = {"nodes": number_extract(matching["product_name"]["nodes"])}
     if len(new_unit["nodes"]) > 0:
         changed = False
@@ -449,14 +480,16 @@ def normalize_matching(matching):
             if unit["nodes"][0]["word"] == "یک" and len(unit["nodes"]) == 1:
                 units[i] = copy.deepcopy(new_unit)
                 changed = True
-        product_name = list(sorted(matching["product_name"]["nodes"], key=lambda x: x["address"]))
+        product_name = list(
+            sorted(matching["product_name"]["nodes"], key=lambda x: x["address"])
+        )
         if changed:
             for i, word in enumerate(product_name):
                 if word["address"] == new_unit["nodes"][-1]["address"]:
-                    product_name = product_name[i+1:]
+                    product_name = product_name[i + 1 :]
                     break
             matching["product_name"]["nodes"] = product_name
-    
+
     price_amounts = []
     prices_tmp = []
     for price in prices:
@@ -466,14 +499,14 @@ def normalize_matching(matching):
             price_nodes = list(sorted(price["nodes"], key=lambda x: x["address"]))
             for i, word in enumerate(price_nodes):
                 if word["address"] == new_unit["nodes"][-1]["address"]:
-                    price_nodes = price_nodes[i+1:]
+                    price_nodes = price_nodes[i + 1 :]
                     break
             price["nodes"] = price_nodes
         else:
             price_amounts.append(create_YEK(price["nodes"][0]["address"]))
         prices_tmp.append(price)
     prices = prices_tmp
-    
+
     unit_amounts = []
     units_tmp = []
     for unit in units:
@@ -483,7 +516,7 @@ def normalize_matching(matching):
             unit_nodes = list(sorted(unit["nodes"], key=lambda x: x["address"]))
             for i, word in enumerate(unit_nodes):
                 if word["address"] == new_unit["nodes"][-1]["address"]:
-                    unit_nodes = unit_nodes[i+1:]
+                    unit_nodes = unit_nodes[i + 1 :]
                     break
             unit["nodes"] = unit_nodes
         else:
@@ -492,20 +525,17 @@ def normalize_matching(matching):
             unit = create_word("عدد", unit_amounts[-1]["nodes"][-1]["address"])
         units_tmp.append(unit)
     units = units_tmp
-        
-    return [dict(
-        product_name=matching["product_name"], 
-        prices=prices, 
-        price_amounts=price_amounts,
-        units=units,
-        unit_amounts=unit_amounts,
-    )]
-                
-        
-        
-            
-        
-        
+
+    return [
+        dict(
+            product_name=matching["product_name"],
+            prices=prices,
+            price_amounts=price_amounts,
+            units=units,
+            unit_amounts=unit_amounts,
+        )
+    ]
+
 
 # * putting it all together
 def all_extract(dep_graph: DependencyGraph, spans, disp=False):
@@ -534,10 +564,12 @@ def all_extract(dep_graph: DependencyGraph, spans, disp=False):
             # product_name_extracted,
             extracted_show(product_name_extracted)
         )
-    matchings = find_matchings(dep_graph, price_extracted, unit_extracted, product_name_extracted)
-    matchings_normalized = list(itertools.chain.from_iterable(normalize_matching(m) for m in matchings))
-    
-
+    matchings = find_matchings(
+        dep_graph, price_extracted, unit_extracted, product_name_extracted
+    )
+    matchings_normalized = list(
+        itertools.chain.from_iterable(normalize_matching(m) for m in matchings)
+    )
 
     return matchings_normalized
 

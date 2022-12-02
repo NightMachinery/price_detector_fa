@@ -54,7 +54,7 @@ def preprocess(text: str, disp=False):
     #: *** do a second pass with word_tokenize after preprocessing and get B
     #: *** match each token in B with the first unmatched token in A that shares its text. (Normalize the A's token's text first.)
     ##
-    
+
     if disp:
         print(text)
     tokens_raw, indices_raw = word_tokenizer.tokenize_with_indices(text)
@@ -63,7 +63,7 @@ def preprocess(text: str, disp=False):
         if token in simple_replacements.keys():
             tokens_converted.append(simple_replacements[token])
         else:
-            tokens_converted.append (token)
+            tokens_converted.append(token)
 
     for k, v in replacements_compiled.items():
         text = re.sub(k, v, text)
@@ -91,14 +91,13 @@ def preprocess(text: str, disp=False):
             token = simple_replacements[token]
 
         try:
-          curr = tokens_converted.index(token, curr)
-          tokens_processed.append(token)
-          tokens_indices.append(indices_raw[curr])
-          curr = curr+1
+            curr = tokens_converted.index(token, curr)
+            tokens_processed.append(token)
+            tokens_indices.append(indices_raw[curr])
+            curr = curr + 1
         except ValueError:
-          tokens_processed.append(token)
-          tokens_indices.append((-1,-1))
-
+            tokens_processed.append(token)
+            tokens_indices.append((-1, -1))
 
     return tokens_processed, tokens_indices
 
