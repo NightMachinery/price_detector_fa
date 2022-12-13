@@ -429,7 +429,7 @@ def find_matchings(
 
 def normalize_matching(matching):
     #: discard out of context parts
-    #: @todo elements with distance more than MAX_CONTEXT_DISTANCE value than neareset part
+    #: @todo elements with distance more than CONTEXT_MAX_LENGTH value than neareset part
 
     matching = copy.deepcopy(matching)
 
