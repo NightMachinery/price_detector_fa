@@ -122,6 +122,7 @@ subject_stop_words = [
     "با",
     "بدون",
 ]
+#: @todo We can also drop tokens by POS, e.g., verbs.
 
 CONTEXT_MAX_LENGTH = 15
 

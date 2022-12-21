@@ -10,9 +10,10 @@ from .hardcoded import (
 )
 
 # * icecream
-# from icecream import ic, colorize as ic_colorize
+from icecream import ic, colorize as ic_colorize
 
-# ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
+ic.configureOutput(outputFunction=lambda s: print(ic_colorize(s), flush=True))
+
 # * nltk
 from nltk import DependencyGraph
 
@@ -67,7 +68,9 @@ class WordTokenizer_with_indices(WordTokenizer):
 
 
 # returns a dictionary of span of each node in dependency graph
-def find_spans(dep_graph, token_indices):
+def find_spans(dep_graph,
+               token_indices #: Tuple of (start, end)
+               ):
     spans = {}
     for key, node in dep_graph.nodes.items():
         if key > 0:

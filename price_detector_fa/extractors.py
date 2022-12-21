@@ -385,6 +385,8 @@ def find_matchings(
         for x in (prices_extracted, units_extracted, product_names_extracted)
     )
 
+    # ic(prices, units, product_names)
+
     while True:
         if len(product_names) == 1:
             matchings.append(
@@ -465,8 +467,8 @@ def normalize_matching(matching):
                 units[unit_index]["nodes"][0]["address"]
                 > prices[i + 1]["nodes"][0]["address"]
             ):
-                matched_units_rev.append(units[units_index])
-                units_index += 1
+                matched_units_rev.append(units[unit_index])
+                unit_index += 1
             else:
                 matched_units_rev.append(create_YEK(prices[i]["nodes"][0]["address"]))
 
@@ -538,7 +540,8 @@ def normalize_matching(matching):
 
 
 # * putting it all together
-def all_extract(dep_graph: DependencyGraph, spans, disp=False):
+def all_extract(dep_graph: DependencyGraph,
+                disp=False):
     #: @todo6/Hoseini
     price_extracted = price_extract(dep_graph)
     if disp:
@@ -581,9 +584,9 @@ def all_extract(dep_graph: DependencyGraph, spans, disp=False):
     #:   then use the indices of the found objects and prices to match the found counts to objects.
     #:   Then assume count one for other unmatched objects.
     #: * @todo/Soroosh after all objects have a matched count, then
-    #: ** extract numbers from the objects found, and replace their matched count with the extracted nmber.
+    #: ** extract numbers from the objects found, and replace their matched count with the extracted number.
     #: *** only do this if the old count is one. Else, throw a warning.
-    #: @update/Soroush for matching we assume that object is before pric
+    #: @assumption/bad @update/Soroush for matching we assume that object is before price.
     #: * we are able to skip information about change of prices like value of something become cheaper
     #: @update/Soroush matching regex (from left to right in eng) ( ((unit) object (price)* | object ((unit) price)*)* )
 
