@@ -4,6 +4,7 @@ import re, codecs
 import itertools
 from collections import defaultdict
 import copy
+import os
 
 from .hardcoded import (
     amount_anchor_tokens,
@@ -83,7 +84,10 @@ sentence_tokenizer = SentenceTokenizer()
 normalizer = Normalizer()
 stemmer = Stemmer()
 lemmatizer = Lemmatizer()
-tagger = POSTagger(model="resources/postagger.model")
-chunker = Chunker(model="resources/chunker.model")
+
+# print("file: " + __file__)
+res_dir = f"{os.path.dirname(__file__)}/../resources/"
+tagger = POSTagger(model=f"{res_dir}/postagger.model")
+chunker = Chunker(model=f"{res_dir}/chunker.model")
 parser = DependencyParser(tagger=tagger, lemmatizer=lemmatizer)
 # * end

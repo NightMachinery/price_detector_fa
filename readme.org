@@ -3,13 +3,13 @@
 =price_detector_fa= extracts product/price/amount tuples from Persian text using rule-based methods.
 
 * Contributers
-Feraidoon Mehri 
-
-Fahime Hosseini: 400210969
-
-Soroush Vafaie Tabar: 401208945
+- Feraidoon Mehri
+- Fahime Hosseini
+- Soroush Vafaie Tabar
 
 * Installation
+This library does not work on Windows.
+
 1. Run the following in this project's directory:
 #+begin_example zsh
 pip install -e .
@@ -17,3 +17,54 @@ bash install.sh
 #+end_example
 
 2. Install =graphviz= using your OS package manager.
+
+* Usage
+#+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
+from price_detector_fa.samples import *
+from price_detector_fa.utils import *
+from price_detector_fa.extractors import *
+from price_detector_fa.preprocessing import *
+from price_detector_fa.hardcoded import *
+
+
+def matching_extract(sample):
+    output = []
+    for s in sentence_tokenizer.tokenize(sample):
+        s_tokens, s_spans = preprocess(s)
+
+        s_parsed = parser.parse(s_tokens)
+        s_spans = find_spans(s_parsed, s_spans)
+
+        matchings = all_extract(s_parsed)
+        output = output + list(
+            matching_show(matching, s_spans) for matching in matchings
+        )
+    return output
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
+matching_extract("عباس‌آقا ده فروند شتر را به بهای پنجاه قران خریداری نموده و و خوشال شدند")
+#+end_src
+
+#+RESULTS:
+| product_name | : | مقدار:  شتر | product_name_span | : | (18 21) | product_unit | : | (مقدار:  فروند) | product_amount | : | (مقدار:  ده) | price_unit | : | (مقدار:  قران) | price_amount | : | (مقدار:  پنجاه) |
+
+#+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
+matching_extract("با سه هزار تومان میشود یک عدد بادکنک خرید.")
+#+end_src
+
+#+RESULTS:
+| product_name | : | مقدار:  بادکنک خرید . | product_name_span | : | (30 42) | product_unit | : | (مقدار:  عدد) | product_amount | : | (مقدار:  یک) | price_unit | : | (مقدار:  تومان) | price_amount | : | (مقدار:  سه هزار) |
+
+#+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
+print(sample_16_2)
+matching_extract(sample_16_2)
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: قیمت هندوانه ارزان شد و قیمت  هر گرم طلا هزار تومان است
+| product_name | : | مقدار:  طلا | product_name_span | : | (37 40) | product_unit | : | (مقدار:  گرم) | product_amount | : | (مقدار:  یک) | price_unit | : | (مقدار:  تومان) | price_amount | : | (مقدار:  هزار) |
+:END:
