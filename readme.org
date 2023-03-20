@@ -45,26 +45,24 @@ def matching_extract(sample):
 #+RESULTS:
 
 #+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
-matching_extract("عباس‌آقا ده فروند شتر را به بهای پنجاه قران خریداری نموده و و خوشال شدند")
+print(matching_extract("عباس‌آقا ده فروند شتر را به بهای پنجاه قران خریداری نموده و و خوشال شدند"))
 #+end_src
 
 #+RESULTS:
-| product_name | : | مقدار:  شتر | product_name_span | : | (18 21) | product_unit | : | (مقدار:  فروند) | product_amount | : | (مقدار:  ده) | price_unit | : | (مقدار:  قران) | price_amount | : | (مقدار:  پنجاه) |
+: [{'product_name': 'مقدار:  شتر', 'product_name_span': (18, 21), 'product_unit': ['مقدار:  فروند'], 'product_amount': ['مقدار:  ده'], 'price_unit': ['مقدار:  قران'], 'price_amount': ['مقدار:  پنجاه']}]
 
 #+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
-matching_extract("با سه هزار تومان میشود یک عدد بادکنک خرید.")
+print(matching_extract("با سه هزار تومان میشود یک عدد بادکنک خرید."))
 #+end_src
 
 #+RESULTS:
-| product_name | : | مقدار:  بادکنک خرید . | product_name_span | : | (30 42) | product_unit | : | (مقدار:  عدد) | product_amount | : | (مقدار:  یک) | price_unit | : | (مقدار:  تومان) | price_amount | : | (مقدار:  سه هزار) |
+: [{'product_name': 'مقدار:  بادکنک خرید .', 'product_name_span': (30, 42), 'product_unit': ['مقدار:  عدد'], 'product_amount': ['مقدار:  یک'], 'price_unit': ['مقدار:  تومان'], 'price_amount': ['مقدار:  سه هزار']}]
 
 #+begin_src jupyter-python :kernel py_310 :session emacs_py_1 :async yes :exports both
 print(sample_16_2)
-matching_extract(sample_16_2)
+print(matching_extract(sample_16_2))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
 : قیمت هندوانه ارزان شد و قیمت  هر گرم طلا هزار تومان است
-| product_name | : | مقدار:  طلا | product_name_span | : | (37 40) | product_unit | : | (مقدار:  گرم) | product_amount | : | (مقدار:  یک) | price_unit | : | (مقدار:  تومان) | price_amount | : | (مقدار:  هزار) |
-:END:
+: [{'product_name': 'مقدار:  طلا', 'product_name_span': (37, 40), 'product_unit': ['مقدار:  گرم'], 'product_amount': ['مقدار:  یک'], 'price_unit': ['مقدار:  تومان'], 'price_amount': ['مقدار:  هزار']}]
